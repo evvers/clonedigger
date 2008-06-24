@@ -110,13 +110,18 @@ class Unifier:
 
 class Cluster:
     count = 0
-    def __init__(self, tree):
-	self._n = 1
-	self._unifier_tree = tree
-	self._trees = [tree]
+    def __init__(self, tree=None):
+	if tree:
+	    self._n = 1
+	    self._unifier_tree = tree
+	    self._trees = [tree]
+	    self._max_covered_lines = len(tree.getCoveredLineNumbers())
+	else:
+	    self._n = 0
+	    self._trees = []
+	    self._max_covered_lines = 0
 	Cluster.count += 1
 	self._cluster_number = Cluster.count	
-	self._max_covered_lines = 0
     def getUnifierTree(self):
 	return self._unifier_tree
     def getCount(self):

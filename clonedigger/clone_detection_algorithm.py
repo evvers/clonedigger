@@ -142,21 +142,18 @@ def findDuplicateCode(source_files, report):
 		statement_sequences.append(sequence)
 	return statement_sequences
 
-    def mark_using_hash(hash_to_statement):
+    def mark_using_dcup(hash_to_statement):	
 	for h in hash_to_statement:
+	    cluster = Cluster()
 	    for statement in hash_to_statement[h]:
-		statement.setMark(h)
+		cluster.addWithoutUnification(statement)
+		statement.setMark(cluster)		
     def findHugeSequences():
 	def f_size(x):	  
 	    return x.getMaxCoveredLines()
-	def f_const(x):
-	    return 3
 	def fcode(x):
 	    return x.getMark()
-	if arguments.clusterize_using_dcup:
-	    f = f_const
-	else:
-	    f = f_size
+        f = f_size
 	suffix_tree_instance = suffix_tree.SuffixTree(fcode)
 	for sequence in statement_sequences:
 	    suffix_tree_instance.add(sequence)
@@ -249,7 +246,7 @@ def findDuplicateCode(source_files, report):
 	print 'Number of different hash values: ', len(hash_to_statement)
     if arguments.clusterize_using_dcup:
 	print 'Marking each statement with its hash value'
-	mark_using_hash(hash_to_statement)
+	mark_using_dcup(hash_to_statement)
     else:
 	if verbose:
 	    print 'Building patterns...',
