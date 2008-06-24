@@ -56,11 +56,14 @@ def findDuplicateCode(source_files, report):
 	    for statement in sequence:
 		statement.storeSize()
 
-    def build_hash_to_statement():
+    def build_hash_to_statement(dcup_hash = True):
 	hash_to_statement = {}
 	for statement_sequence in statement_sequences:
 	    for statement in statement_sequence:
-		h = statement.getDCupHash(arguments.hashing_depth)
+		if dcup_hash:
+		    h = statement.getDCupHash(arguments.hashing_depth)
+		else:
+		    h = statement.getFullHash()
 		if not hash_to_statement.has_key(h):
 		    hash_to_statement[h] = [statement]
 		else:
@@ -142,7 +145,7 @@ def findDuplicateCode(source_files, report):
 		statement_sequences.append(sequence)
 	return statement_sequences
 
-    def mark_using_dcup(hash_to_statement):	
+    def mark_using_hash(hash_to_statement):	
 	for h in hash_to_statement:
 	    cluster = Cluster()
 	    for statement in hash_to_statement[h]:
@@ -234,19 +237,23 @@ def findDuplicateCode(source_files, report):
     calc_statement_sizes() 
     if verbose:
 	print 'done'
+
     if verbose:
 	print 'Building statement hash...',
 	sys.stdout.flush()
-
     report.startTimer('Building statement hash')
-    hash_to_statement = build_hash_to_statement()
+    if arguments.clusterize_using_hash:
+	hash_to_statement = build_hash_to_statement(dcup_hash = False)
+    else:
+	hash_to_statement = build_hash_to_statement(dcup_hash = True)
     report.stopTimer()
     if verbose:
-	print 'done'
+        print 'done'
 	print 'Number of different hash values: ', len(hash_to_statement)
-    if arguments.clusterize_using_dcup:
+    
+    if arguments.clusterize_using_dcup or arguments.clusterize_using_hash:
 	print 'Marking each statement with its hash value'
-	mark_using_dcup(hash_to_statement)
+	mark_using_hash(hash_to_statement)
     else:
 	if verbose:
 	    print 'Building patterns...',

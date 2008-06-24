@@ -130,12 +130,15 @@ class AbstractSyntaxTree:
 	assert()
     def __str__(self):
 	return ' ( ' + self.getName() + ' '.join([str(child) for child in self.getChilds()]) + ' ) '
+    def getFullHash(self):
+	return self.getDCupHash(-1) 
     def getDCupHash(self, level):
 	if len(self._childs) == 0:
 	    ret = 0 # in case of names and constants
 	else:
 	    ret = (level+1) * hash(self._name) * len(self._childs)
-	if level > 0:
+	# if level == -1, it will not stop until it reaches the leaves 
+	if level != 0:
             for i in range(len(self._childs)):
 		child = self._childs[i]
 	        ret += (i+1)*child.getDCupHash(level-1)
