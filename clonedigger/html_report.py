@@ -95,7 +95,7 @@ class HTMLReport(Report):
 		statements = [clone[j][i] for j in [0,1]]
 
 		def diff_highlight(seqs):
-		    s = difflib.SequenceMatcher(lambda x:x=='<BR>\n')
+		    s = difflib.SequenceMatcher(lambda x:x == '<BR>\n')
 		    s.set_seqs(seqs[0], seqs[1])
 		    blocks = s.get_matching_blocks()
 		    if not ((blocks[0][0]==0) and (blocks[0][1]==0)):
@@ -126,7 +126,10 @@ class HTMLReport(Report):
 			    indent2 = indent1.replace('\t', 4*' ')
 			    source_line = re.sub('^' + indent1,  indentations[j].index(indent2)*' ', source_line)
 			    source_lines[j].append(source_line)
-		    d = diff_highlight([format_line_code('<BR>\n'.join(source_lines[j])) for j in [0,1]])
+		    d = diff_highlight([('\n'.join(source_lines[j])) for j in [0,1]])
+		    d = [d[i].replace(' ', '\x01') for i in (0,1)]
+		    d = [format_line_code(d[i].replace('\n', '<BR>\n')) for i in [0,1]]		   
+		    d = [d[i].replace('\x01', ' ') for i in (0,1)]
 		    u = anti_unification.Unifier(statements[0], statements[1])
 		    return d,u
 		if arguments.use_diff:
@@ -177,7 +180,7 @@ class HTMLReport(Report):
 		    color = 'AQUA'
 		s+= t[0] + '<TD style="width: 10px;" BGCOLOR=%s> </TD>'%(color,) + t[1]
 		s += '</TR>\n'
-	    s+= '</TABLE> </P> <HLINE>'
+	    s+= '</TABLE> </P> <HR>'
 	    clone_descriptions.append(s)
 	descr = """<P><B>Source files:</B><BR>%s</P>
 	<P>Clones detected: %d</P>
@@ -230,7 +233,6 @@ clusterize_using_dcup = %s<BR>
 	}
 </script>
 
-<TITLE> CloneDigger Report </TITLE>
 <style type="text/css">
 .hidden { display: none; }
 .unhidden { display: block; }
