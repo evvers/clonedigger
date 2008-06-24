@@ -68,6 +68,8 @@ class HTMLReport(Report):
 	    return '<span style="font-family: monospace;">%s</span>'%(s,)
 	errors_info = "\n".join(['<P> <FONT COLOR=RED> %s </FONT> </P>' % (error_info.replace('\n', '<BR>'),) for error_info in self._error_info])
 
+	very_strange_const = 'VERY_STRANGE_CONST'
+
 	clone_descriptions = []
 	for clone_i in range(len(self._clones)):
 	    clone = self._clones[clone_i]
@@ -108,7 +110,7 @@ class HTMLReport(Report):
 			if (i < (len(blocks)-1)):				
 			    nextblock = blocks[i+1]
 			    for j in [0,1]:
-				r[j] += '<span style="color: rgb(255, 0, 0);">%s</span>'%(seqs[j][block[j]+block[2]:nextblock[j]],)
+				r[j] += '<span'+very_strange_const+'style="color:rgb(255,0,0);">%s</span>'%(seqs[j][block[j]+block[2]:nextblock[j]],)
 		    return r
 		# preparation of indentation
 		indentations = (set(), set())
@@ -126,9 +128,7 @@ class HTMLReport(Report):
 			    indent2 = indent1.replace('\t', 4*' ')
 			    source_line = re.sub('^' + indent1,  indentations[j].index(indent2)*' ', source_line)
 			    source_lines[j].append(source_line)
-		    very_strange_const = 'VERY_STRANGE_CONST'
 		    d = diff_highlight([('\n'.join(source_lines[j])) for j in [0,1]])
-		    d = [d[i].replace(' ', very_strange_const) for i in (0,1)]
 		    d = [format_line_code(d[i].replace('\n', '<BR>\n')) for i in [0,1]]		   
 		    d = [d[i].replace(very_strange_const, ' ') for i in (0,1)]
 		    u = anti_unification.Unifier(statements[0], statements[1])
