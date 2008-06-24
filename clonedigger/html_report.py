@@ -126,10 +126,11 @@ class HTMLReport(Report):
 			    indent2 = indent1.replace('\t', 4*' ')
 			    source_line = re.sub('^' + indent1,  indentations[j].index(indent2)*' ', source_line)
 			    source_lines[j].append(source_line)
+		    very_strange_const = 'VERY_STRANGE_CONST'
 		    d = diff_highlight([('\n'.join(source_lines[j])) for j in [0,1]])
-		    d = [d[i].replace(' ', '\x01') for i in (0,1)]
+		    d = [d[i].replace(' ', very_strange_const) for i in (0,1)]
 		    d = [format_line_code(d[i].replace('\n', '<BR>\n')) for i in [0,1]]		   
-		    d = [d[i].replace('\x01', ' ') for i in (0,1)]
+		    d = [d[i].replace(very_strange_const, ' ') for i in (0,1)]
 		    u = anti_unification.Unifier(statements[0], statements[1])
 		    return d,u
 		if arguments.use_diff:
