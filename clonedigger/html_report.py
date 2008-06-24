@@ -188,9 +188,9 @@ clustering_threshold = %d<BR>
 distance_threshold = %d<BR>
 size_threshold = %d<BR>
 hashing_depth = %d<BR>
-clusterize_using_hash = %s<BR>
+clusterize_using_dcup = %s<BR>
 </P> 
-	""" % (', <BR>'.join(self._file_names), len(self._clones), self.covered_source_lines_count, self.all_source_lines_count, 100*self.covered_source_lines_count/float(self.all_source_lines_count), arguments.clustering_threshold, arguments.distance_threshold, arguments.size_threshold, arguments.hashing_depth, str(arguments.clusterize_using_hash))
+	""" % (', <BR>'.join(self._file_names), len(self._clones), self.covered_source_lines_count, self.all_source_lines_count, 100*self.covered_source_lines_count/float(self.all_source_lines_count), arguments.clustering_threshold, arguments.distance_threshold, arguments.size_threshold, arguments.hashing_depth, str(arguments.clusterize_using_dcup))
 	if arguments.print_time:
 	    timings = '<B>Time elapsed</B><BR>'
 	    timings+= '<BR>\n'.join(['%s : %.2f seconds'%(i[0], i[1]) for i in self._timers])

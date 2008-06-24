@@ -48,11 +48,11 @@ The semantics of threshold options is discussed in the paper "Duplicate code det
 --distance-threshold=THRESHOLD, the maximum amount of differences between pair of sequences in clone pair (5 by default). Larger value leads to larger amount of false positives.
 --hashing-depth=DEPTH, default value if 1, read the paper for semantics. Compuation can be speed up by increasing increasing this value (but some clones can be list).
 --clustering-threshold=THRESHOLD, read the paper for semantics.
---clusterize-using-hash, mark each statement with its D-cup value instead of the most similar pattern. This option together with --hashing-depth=0 make it possible to catch all considered clones (but it is slow and applicable only to small programs)."""
+--clusterize-using-dcup, mark each statement with its D-cup value instead of the most similar pattern. This option together with --hashing-depth=0 make it possible to catch all considered clones (but it is slow and applicable only to small programs)."""
 
 from ast_suppliers import *
 if __name__ == '__main__':
-    optlist, source_file_names = getopt.getopt(sys.argv[1:], '', ['language=', 'output=', 'clustering-threshold=', 'distance-threshold=', 'hashing-depth=', 'size-threshold=', 'clusterize-using-hash', 'recursive', 'report-statement-marks', 'help', 'dont-print-time', 'force', 'force-diff'])
+    optlist, source_file_names = getopt.getopt(sys.argv[1:], '', ['language=', 'output=', 'clustering-threshold=', 'distance-threshold=', 'hashing-depth=', 'size-threshold=', 'clusterize-using-dcup', 'recursive', 'report-statement-marks', 'help', 'dont-print-time', 'force', 'force-diff'])
     source_files = [] 
     #TODO remove in release
     supplier = abstract_syntax_tree_suppliers['python']
@@ -83,8 +83,8 @@ if __name__ == '__main__':
 	    arguments.size_threshold = int(value)
 	elif parameter == '--hashing-depth':
 	    arguments.hashing_depth = int(value)
-	elif parameter == '--clusterize-using-hash':
-	    arguments.clusterize_using_hash = True
+	elif parameter == '--clusterize-using-dcup':
+	    arguments.clusterize_using_dcup = True
 	elif parameter == '--recursive':
 	    recursive = True
 	elif parameter == '--report-statement-marks':

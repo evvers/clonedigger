@@ -153,7 +153,7 @@ def findDuplicateCode(source_files, report):
 	    return 3
 	def fcode(x):
 	    return x.getMark()
-	if arguments.clusterize_using_hash:
+	if arguments.clusterize_using_dcup:
 	    f = f_const
 	else:
 	    f = f_size
@@ -247,7 +247,7 @@ def findDuplicateCode(source_files, report):
     if verbose:
 	print 'done'
 	print 'Number of different hash values: ', len(hash_to_statement)
-    if arguments.clusterize_using_hash:
+    if arguments.clusterize_using_dcup:
 	print 'Marking each statement with its hash value'
 	mark_using_hash(hash_to_statement)
     else:
