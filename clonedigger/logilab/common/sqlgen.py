@@ -237,5 +237,5 @@ def sql_repr(type, val):
         
 if __name__ == "__main__":
     import doctest
-    from logilab.common import sqlgen
+    from clonedigger.logilab.common import sqlgen
     print doctest.testmod(sqlgen)

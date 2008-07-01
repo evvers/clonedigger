@@ -22,7 +22,7 @@ from __future__ import generators
 
 from warnings import warn
 
-from logilab.common.deprecation import class_renamed
+from clonedigger.logilab.common.deprecation import class_renamed
 
 try:
     set = set

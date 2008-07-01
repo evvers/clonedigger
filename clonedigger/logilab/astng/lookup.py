@@ -32,8 +32,8 @@ __docformat__ = "restructuredtext en"
 
 import __builtin__
 
-from logilab.astng.utils import are_exclusive
-from logilab.astng import nodes, MANAGER, _infer_stmts, copy_context
+from clonedigger.logilab.astng.utils import are_exclusive
+from clonedigger.logilab.astng import nodes, MANAGER, _infer_stmts, copy_context
 
 
 def lookup(self, name):

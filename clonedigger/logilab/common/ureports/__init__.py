@@ -166,6 +166,6 @@ class BaseWriter(object):
             del self.writeln
 
 
-from logilab.common.ureports.nodes import *
-from logilab.common.ureports.text_writer import TextWriter
-from logilab.common.ureports.html_writer import HTMLWriter
+from clonedigger.logilab.common.ureports.nodes import *
+from clonedigger.logilab.common.ureports.text_writer import TextWriter
+from clonedigger.logilab.common.ureports.html_writer import HTMLWriter

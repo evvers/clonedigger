@@ -22,7 +22,7 @@ A micro report is a tree of layout and content objects
 
 __docformat__ = "restructuredtext en"
 
-from logilab.common.tree import VNode
+from clonedigger.logilab.common.tree import VNode
 
 class BaseComponent(VNode):
     """base report component

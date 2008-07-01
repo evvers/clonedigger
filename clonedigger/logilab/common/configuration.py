@@ -24,7 +24,7 @@ Quick start: simplest usage
 ```````````````````````````
 
 import sys
-from logilab.common.configuration import Configuration
+from clonedigger.logilab.common.configuration import Configuration
 
 options = [('dothis', {'type':'yn', 'default': True, 'metavar': '<y or n>'}),
            ('value', {'type': 'string', 'metavar': '<string>'}),
@@ -81,9 +81,9 @@ from os.path import exists
 from copy import copy
 from ConfigParser import ConfigParser, NoOptionError, NoSectionError
 
-from logilab.common.compat import set
-from logilab.common.textutils import normalize_text, unquote
-from logilab.common.optik_ext import OptionParser, OptionGroup, Values, \
+from clonedigger.logilab.common.compat import set
+from clonedigger.logilab.common.textutils import normalize_text, unquote
+from clonedigger.logilab.common.optik_ext import OptionParser, OptionGroup, Values, \
      OptionValueError, OptionError, HelpFormatter, generate_manpage, check_date, \
      check_yn, check_csv, check_file, check_color, check_named, check_password,\
      NO_DEFAULT, OPTPARSE_FORMAT_DEFAULT

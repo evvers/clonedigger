@@ -82,9 +82,9 @@ except:
     class With:
         """dummy With node, shouldn't be used since py < 2.5"""
 
-from logilab.astng._exceptions import NotFoundError, InferenceError
-from logilab.astng.utils import extend_class
-from logilab.astng import InferenceContext
+from clonedigger.logilab.astng._exceptions import NotFoundError, InferenceError
+from clonedigger.logilab.astng.utils import extend_class
+from clonedigger.logilab.astng import InferenceContext
 
 import re
 ID_RGX = re.compile('^[a-zA-Z_][a-zA-Z_0-9]*$')

@@ -28,11 +28,11 @@ __docformat__ = "restructuredtext en"
 
 from os.path import dirname
 
-from logilab.common.modutils import get_module_part, is_relative, \
+from clonedigger.logilab.common.modutils import get_module_part, is_relative, \
      is_standard_module
 
-from logilab import astng
-from logilab.astng.utils import LocalsVisitor
+from clonedigger.logilab import astng
+from clonedigger.logilab.astng.utils import LocalsVisitor
 
 class IdGeneratorMixIn:
     """

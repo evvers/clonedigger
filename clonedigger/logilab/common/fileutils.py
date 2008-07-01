@@ -33,8 +33,8 @@ from os import sep, mkdir, remove, listdir, stat, chmod
 from stat import ST_MODE, S_IWRITE
 from cStringIO import StringIO
 
-from logilab.common import STD_BLACKLIST as BASE_BLACKLIST, IGNORED_EXTENSIONS
-from logilab.common.shellutils import find
+from clonedigger.logilab.common import STD_BLACKLIST as BASE_BLACKLIST, IGNORED_EXTENSIONS
+from clonedigger.logilab.common.shellutils import find
 
 def first_level_directory(path):
     """return the first level directory of a path
@@ -240,7 +240,7 @@ def relative_path(from_file, to_file):
     return sep.join(result)
 
 
-from logilab.common.textutils import _LINE_RGX
+from clonedigger.logilab.common.textutils import _LINE_RGX
 from sys import version_info
 _HAS_UNIV_OPEN = version_info[:2] >= (2, 3)
 del version_info

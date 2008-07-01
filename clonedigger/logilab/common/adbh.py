@@ -21,7 +21,7 @@ Helpers are provided for postgresql, mysql and sqlite.
 """
 __docformat__ = "restructuredtext en"
 
-from logilab.common.deprecation import obsolete
+from clonedigger.logilab.common.deprecation import obsolete
 
 class BadQuery(Exception): pass
 class UnsupportedFunction(BadQuery): pass

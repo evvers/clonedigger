@@ -57,7 +57,7 @@ except ImportError:
 
 OPTPARSE_FORMAT_DEFAULT = sys.version_info >= (2, 4)
 
-from logilab.common.textutils import get_csv
+from clonedigger.logilab.common.textutils import get_csv
 
 def check_regexp(option, opt, value):
     """check a regexp value by trying to compile it

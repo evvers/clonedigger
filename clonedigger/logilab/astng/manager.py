@@ -27,13 +27,13 @@ import sys
 import os
 from os.path import dirname, basename, abspath, join, isdir, exists
 
-from logilab.common.cache import Cache
-from logilab.common.modutils import NoSourceFile, is_python_source, \
+from clonedigger.logilab.common.cache import Cache
+from clonedigger.logilab.common.modutils import NoSourceFile, is_python_source, \
      file_from_modpath, load_module_from_name, \
      get_module_files, get_source_file
-from logilab.common.configuration import OptionsProviderMixIn
+from clonedigger.logilab.common.configuration import OptionsProviderMixIn
 
-from logilab.astng import ASTNGBuildingException, Instance, nodes
+from clonedigger.logilab.astng import ASTNGBuildingException, Instance, nodes
 
 def astng_wrapper(func, modname):
     """wrapper to give to ASTNGManager.project_from_files"""
@@ -105,7 +105,7 @@ class ASTNGManager(OptionsProviderMixIn):
         except KeyError:
             if source:
                 try:
-                    from logilab.astng.builder import ASTNGBuilder
+                    from clonedigger.logilab.astng.builder import ASTNGBuilder
                     astng = ASTNGBuilder(self).file_build(filepath, modname)
                 except SyntaxError:
                     raise
@@ -172,7 +172,7 @@ class ASTNGManager(OptionsProviderMixIn):
         try:
             return self._cache[filepath]
         except KeyError:
-            from logilab.astng.builder import ASTNGBuilder
+            from clonedigger.logilab.astng.builder import ASTNGBuilder
             astng = ASTNGBuilder(self).module_build(module, modname)
             # update caches (filepath and astng.file are not necessarily  the
             # same (.pyc pb))

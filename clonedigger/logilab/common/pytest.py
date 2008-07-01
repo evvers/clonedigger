@@ -22,7 +22,7 @@ For instance, if you wish to add a custom -l option to specify a loglevel, you
 could define the following ``pytestconf.py`` file ::
 
     import logging
-    from logilab.common.pytest import PyTester
+    from clonedigger.logilab.common.pytest import PyTester
     
     def update_parser(parser):
         parser.add_option('-l', '--loglevel', dest='loglevel', action='store',
@@ -69,8 +69,8 @@ import os, sys
 import os.path as osp
 from time import time, clock
 
-from logilab.common.fileutils import abspath_listdir
-from logilab.common import testlib
+from clonedigger.logilab.common.fileutils import abspath_listdir
+from clonedigger.logilab.common import testlib
 import doctest
 import unittest
 
@@ -82,7 +82,7 @@ import __builtin__
 
 try:
     import django
-    from logilab.common.modutils import modpath_from_file, load_module_from_modpath
+    from clonedigger.logilab.common.modutils import modpath_from_file, load_module_from_modpath
     DJANGO_FOUND = True
 except ImportError:
     DJANGO_FOUND = False
@@ -537,7 +537,7 @@ def make_parser():
                       help="Profile execution and store data in the given file")
 
     try:
-        from logilab.devtools.lib.coverage import Coverage
+        from clonedigger.logilab.devtools.lib.coverage import Coverage
         parser.add_option('--coverage', dest="coverage", default=False,
                           action="store_true",
                           help="run tests with pycoverage (conflicts with --pdb)")
@@ -593,7 +593,7 @@ def run():
         sys.path.insert(0, '')    
     if covermode:
         # control_import_coverage(rootdir)
-        from logilab.devtools.lib.coverage import Coverage
+        from clonedigger.logilab.devtools.lib.coverage import Coverage
         cvg = Coverage([rootdir])
         cvg.erase()
         cvg.start()

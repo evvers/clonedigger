@@ -11,7 +11,7 @@ use logging module instead.',
 
 __revision__ = "$Id: logservice.py,v 1.5 2006-03-05 16:13:28 syt Exp $"
 
-from logilab.common.logger import make_logger, LOG_ERR, LOG_WARN, LOG_NOTICE, \
+from clonedigger.logilab.common.logger import make_logger, LOG_ERR, LOG_WARN, LOG_NOTICE, \
      LOG_INFO, LOG_CRIT, LOG_DEBUG
 
 def init_log(treshold, method='eprint', sid='common-log-service',

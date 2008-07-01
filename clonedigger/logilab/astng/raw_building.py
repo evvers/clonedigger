@@ -25,7 +25,7 @@ __docformat__ = "restructuredtext en"
 import sys
 from inspect import getargspec
 
-from logilab.astng import nodes
+from clonedigger.logilab.astng import nodes
 
 def attach___dict__(node):
     """attach the __dict__ attribute to Class and Module objects"""

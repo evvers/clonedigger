@@ -37,14 +37,14 @@ from inspect import isfunction, ismethod, ismethoddescriptor, isclass, \
      isbuiltin
 from inspect import isdatadescriptor
 
-from logilab.common.fileutils import norm_read
-from logilab.common.modutils import modpath_from_file
+from clonedigger.logilab.common.fileutils import norm_read
+from clonedigger.logilab.common.modutils import modpath_from_file
 
-from logilab.astng import nodes, YES, Instance
-from logilab.astng.utils import ASTWalker
-from logilab.astng._exceptions import ASTNGBuildingException, InferenceError
-from logilab.astng.raw_building import *
-from logilab.astng.astutils import cvrtr
+from clonedigger.logilab.astng import nodes, YES, Instance
+from clonedigger.logilab.astng.utils import ASTWalker
+from clonedigger.logilab.astng._exceptions import ASTNGBuildingException, InferenceError
+from clonedigger.logilab.astng.raw_building import *
+from clonedigger.logilab.astng.astutils import cvrtr
 
 import token
 from compiler import transformer, consts
@@ -154,7 +154,7 @@ class ASTNGBuilder:
     
     def __init__(self, manager=None):
         if manager is None:
-            from logilab.astng import MANAGER as manager
+            from clonedigger.logilab.astng import MANAGER as manager
         self._manager = manager
         self._module = None
         self._file = None

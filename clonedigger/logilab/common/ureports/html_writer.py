@@ -20,7 +20,7 @@ __revision__ = "$Id: html_writer.py,v 1.10 2006-03-08 09:47:29 katia Exp $"
 
 from cgi import escape
 
-from logilab.common.ureports import BaseWriter
+from clonedigger.logilab.common.ureports import BaseWriter
 
 
 class HTMLWriter(BaseWriter):

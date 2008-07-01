@@ -18,7 +18,7 @@
 
 __revision__ = "$Id: docbook_writer.py,v 1.4 2005-05-20 16:42:23 emb Exp $"
 
-from logilab.common.ureports import HTMLWriter
+from clonedigger.logilab.common.ureports import HTMLWriter
 
 class DocbookWriter(HTMLWriter):
     """format layouts as HTML"""

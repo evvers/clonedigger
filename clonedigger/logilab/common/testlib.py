@@ -49,12 +49,12 @@ except ImportError:
             pass
     test_support = TestSupport()
 
-from logilab.common.deprecation import class_renamed, deprecated_function, \
+from clonedigger.logilab.common.deprecation import class_renamed, deprecated_function, \
      obsolete
-from logilab.common.compat import set, enumerate, any
-from logilab.common.modutils import load_module_from_name
-from logilab.common.debugger import Debugger
-from logilab.common.decorators import cached
+from clonedigger.logilab.common.compat import set, enumerate, any
+from clonedigger.logilab.common.modutils import load_module_from_name
+from clonedigger.logilab.common.debugger import Debugger
+from clonedigger.logilab.common.decorators import cached
 
 __all__ = ['main', 'unittest_main', 'find_tests', 'run_test', 'spawn']
 
@@ -1431,8 +1431,8 @@ def enable_dbc(*args):
     if not ENABLE_DBC:
         return False
     try:
-        from logilab.aspects.weaver import weaver
-        from logilab.aspects.lib.contracts import ContractAspect
+        from clonedigger.logilab.aspects.weaver import weaver
+        from clonedigger.logilab.aspects.lib.contracts import ContractAspect
     except ImportError:
         sys.stderr.write('Warning: logilab.aspects is not available. Contracts disabled.')
         return False

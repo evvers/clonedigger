@@ -24,7 +24,7 @@ command'specific
 import sys
 from os.path import basename
 
-from logilab.common.configuration import Configuration
+from clonedigger.logilab.common.configuration import Configuration
 
 
 DEFAULT_COPYRIGHT = '''\

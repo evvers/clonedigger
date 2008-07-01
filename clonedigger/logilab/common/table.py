@@ -5,7 +5,7 @@ __revision__ = '$Id: table.py,v 1.18 2006-04-09 22:30:53 nico Exp $'
 
 from warnings import warn
 
-from logilab.common.compat import enumerate, sum, set
+from clonedigger.logilab.common.compat import enumerate, sum, set
 
 class Table(object):
     """Table defines a data table with column and row names.

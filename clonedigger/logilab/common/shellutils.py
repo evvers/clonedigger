@@ -28,7 +28,7 @@ import tempfile
 import time
 from os.path import exists, isdir, islink, basename, join, walk
 
-from logilab.common import STD_BLACKLIST
+from clonedigger.logilab.common import STD_BLACKLIST
 
 
 def chown(path, login=None, group=None):

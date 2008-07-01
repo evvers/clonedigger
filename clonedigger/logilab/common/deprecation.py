@@ -21,7 +21,7 @@ __docformat__ = "restructuredtext en"
 import sys
 from warnings import warn
 
-from logilab.common.modutils import LazyObject, load_module_from_name
+from clonedigger.logilab.common.modutils import LazyObject, load_module_from_name
 
 
 class deprecated(type):

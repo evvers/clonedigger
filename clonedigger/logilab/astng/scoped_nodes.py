@@ -31,14 +31,14 @@ __doctype__ = "restructuredtext en"
 import sys
 import pdb
 
-from logilab.common.compat import chain, set
+from clonedigger.logilab.common.compat import chain, set
 
-from logilab.astng.utils import extend_class
-from logilab.astng import YES, MANAGER, Instance, InferenceContext, copy_context, \
+from clonedigger.logilab.astng.utils import extend_class
+from clonedigger.logilab.astng import YES, MANAGER, Instance, InferenceContext, copy_context, \
      unpack_infer, _infer_stmts, \
      Class, Const, Dict, Function, GenExpr, Lambda, \
      Module, Name, Pass, Raise, Tuple, Yield
-from logilab.astng import NotFoundError, NoDefault, \
+from clonedigger.logilab.astng import NotFoundError, NoDefault, \
      ASTNGBuildingException, InferenceError
 
 # module class dict/iterator interface ########################################

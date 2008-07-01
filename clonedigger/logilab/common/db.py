@@ -36,7 +36,7 @@ import sys
 import re
 from warnings import warn
 
-from logilab.common.deprecation import obsolete
+from clonedigger.logilab.common.deprecation import obsolete
 try:
     from mx.DateTime import DateTimeType, DateTimeDeltaType, strptime
     HAS_MX_DATETIME = True
@@ -618,7 +618,7 @@ def get_dbapi_compliant_module(driver, prefered_drivers = None, quiet = False,
             msg = 'No Adapter found for %s, returning native module'
             print >> sys.stderr, msg % err.objname
         mod = err.adapted_obj
-    from logilab.common.adbh import get_adv_func_helper
+    from clonedigger.logilab.common.adbh import get_adv_func_helper
     mod.adv_func_helper = get_adv_func_helper(driver)
     return mod
 
@@ -646,5 +646,5 @@ def get_connection(driver='postgres', host='', database='', user='',
     return adapted_module.connect(host, database, user, password, port=port)
 
 
-from logilab.common.deprecation import moved
+from clonedigger.logilab.common.deprecation import moved
 get_adv_func_helper = moved('logilab.common.adbh', 'get_adv_func_helper')

@@ -22,7 +22,7 @@ This module provides extensions to the logging module from the standard library.
 
 import logging
 
-from logilab.common.textutils import colorize_ansi
+from clonedigger.logilab.common.textutils import colorize_ansi
 
 def xxx_cyan(record):
     if 'XXX' in record.message:

@@ -25,11 +25,11 @@ __doctype__ = "restructuredtext en"
 
 from copy import copy
 
-from logilab.common.compat import imap, chain, set
+from clonedigger.logilab.common.compat import imap, chain, set
 
-from logilab.astng import MANAGER, YES, InferenceContext, Instance, Generator, \
+from clonedigger.logilab.astng import MANAGER, YES, InferenceContext, Instance, Generator, \
      unpack_infer, _infer_stmts, nodes, copy_context
-from logilab.astng import ASTNGError, InferenceError, UnresolvableName, \
+from clonedigger.logilab.astng import ASTNGError, InferenceError, UnresolvableName, \
      NoDefault, NotFoundError, ASTNGBuildingException
 
     

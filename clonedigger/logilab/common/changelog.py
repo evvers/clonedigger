@@ -47,7 +47,7 @@ log title.
 import sys
 from stat import S_IWRITE
 
-from logilab.common.fileutils import ensure_fs_mode
+from clonedigger.logilab.common.fileutils import ensure_fs_mode
 
 BULLET = '*'
 INDENT = '    '

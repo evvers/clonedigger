@@ -34,7 +34,7 @@ IGNORED_EXTENSIONS = ('.pyc', '.pyo', '.elc', '~')
 
 
 
-from logilab.common.deprecation import moved
+from clonedigger.logilab.common.deprecation import moved
 
 get_cycles = moved('logilab.common.graph', 'get_cycles')
 cached = moved('logilab.common.decorators', 'cached')

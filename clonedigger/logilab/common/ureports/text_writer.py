@@ -19,7 +19,7 @@ __revision__ = "$Id: text_writer.py,v 1.9 2005-11-22 13:13:13 syt Exp $"
 
 from os import linesep
 
-from logilab.common.ureports import BaseWriter
+from clonedigger.logilab.common.ureports import BaseWriter
 
 TITLE_UNDERLINES = ['', '=', '-', '`', '.', '~', '^']
 BULLETS = ['*', '-']

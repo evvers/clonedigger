@@ -19,7 +19,7 @@ a daemon mix-in class
 __revision__ = '$Id: daemon.py,v 1.10 2005-11-22 13:13:01 syt Exp $'
 
 import os, signal, sys, time
-from logilab.common.logger import make_logger, LOG_ALERT, LOG_NOTICE
+from clonedigger.logilab.common.logger import make_logger, LOG_ALERT, LOG_NOTICE
 
 class DaemonMixIn:
     """ mixin to make a daemon from watchers/queriers

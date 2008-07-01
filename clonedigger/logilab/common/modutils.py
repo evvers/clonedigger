@@ -39,7 +39,7 @@ import os
 from os.path import walk, splitext, join, abspath, isdir, dirname, exists
 from imp import find_module, load_module, C_BUILTIN, PY_COMPILED, PKG_DIRECTORY
 
-from logilab.common import STD_BLACKLIST
+from clonedigger.logilab.common import STD_BLACKLIST
 
 if sys.platform.startswith('win'):
     PY_SOURCE_EXTS = ('py', 'pyw')

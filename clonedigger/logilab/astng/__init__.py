@@ -45,11 +45,11 @@ from __future__ import generators
 
 __doctype__ = "restructuredtext en"
 
-from logilab.common.compat import chain, imap
+from clonedigger.logilab.common.compat import chain, imap
 
 # WARNING: internal imports order matters !
 
-from logilab.astng._exceptions import *
+from clonedigger.logilab.astng._exceptions import *
 
 
 class InferenceContext(object):
@@ -243,14 +243,14 @@ class Generator(Proxy):
 
 # imports #####################################################################
 
-from logilab.astng.manager import ASTNGManager, Project, Package
+from clonedigger.logilab.astng.manager import ASTNGManager, Project, Package
 MANAGER = ASTNGManager()
 
-from logilab.astng.nodes import *
-from logilab.astng import nodes
-from logilab.astng.scoped_nodes import *
-from logilab.astng import inference
-from logilab.astng import lookup
+from clonedigger.logilab.astng.nodes import *
+from clonedigger.logilab.astng import nodes
+from clonedigger.logilab.astng.scoped_nodes import *
+from clonedigger.logilab.astng import inference
+from clonedigger.logilab.astng import lookup
 lookup._decorate(nodes)
 
 List._proxied = MANAGER.astng_from_class(list)

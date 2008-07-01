@@ -19,8 +19,8 @@
 
 import sys
 
-from logilab.common import flatten
-from logilab.common.visitor import VisitedMixIn, FilteredIterator, no_filter
+from clonedigger.logilab.common import flatten
+from clonedigger.logilab.common.visitor import VisitedMixIn, FilteredIterator, no_filter
 
 ## Exceptions #################################################################
 

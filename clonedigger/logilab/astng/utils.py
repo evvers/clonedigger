@@ -22,8 +22,8 @@ extract information from it
 
 __docformat__ = "restructuredtext en"
 
-from logilab.common.compat import enumerate
-from logilab.astng._exceptions import IgnoreChild
+from clonedigger.logilab.common.compat import enumerate
+from clonedigger.logilab.astng._exceptions import IgnoreChild
 
 def extend_class(original, addons):
     """add methods and attribute defined in the addons class to the original
@@ -124,7 +124,7 @@ def are_exclusive(stmt1, stmt2):
      3) if the common parent is a If or TryExcept statement, look if nodes are
         in exclusive branchs
     """
-    from logilab.astng.nodes import If, TryExcept
+    from clonedigger.logilab.astng.nodes import If, TryExcept
     # index stmt1's parents
     stmt1_parents = {}
     children = {}
