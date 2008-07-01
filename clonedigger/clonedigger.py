@@ -28,8 +28,6 @@ import clone_detection_algorithm
 import arguments 
 import html_report
 
-output_file_name = 'output.html'
-
 help_string = """To run Clone Digger type:
 python clonedigger.py [OPTION]... [SOURCE FILE OR DIRECTORY]...
 
@@ -53,7 +51,9 @@ The semantics of threshold options is discussed in the paper "Duplicate code det
 """
 
 from ast_suppliers import *
-if __name__ == '__main__':
+
+def main():
+    output_file_name = 'output.html'
     optlist, source_file_names = getopt.getopt(sys.argv[1:], '', ['language=', 'output=', 'clustering-threshold=', 'distance-threshold=', 'hashing-depth=', 'size-threshold=', 'clusterize-using-dcup', 'recursive', 'report-statement-marks', 'help', 'dont-print-time', 'force', 'force-diff', 'fast'])
     source_files = [] 
     #TODO remove in release
@@ -134,3 +134,7 @@ if __name__ == '__main__':
 	report.addClone(duplicate)
     report.sortByCloneSize()
     report.writeReport(output_file_name)
+
+if __name__ == '__main__':
+    main()
+
