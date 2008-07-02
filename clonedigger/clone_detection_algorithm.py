@@ -15,6 +15,8 @@
 #   You should have received a copy of the GNU General Public License
 #   along with Clone Digger.  If not, see <http://www.gnu.org/licenses/>.
 
+import sys
+
 from anti_unification import *
 from abstract_syntax_tree import *
 
@@ -28,8 +30,12 @@ def findDuplicateCode(source_files, report):
 	sequences_lengths.extend([len(s) for s in sequences])
 	statement_count += sum([len(s) for s in sequences])
 
+    if not sequences_lengths:
+	print 'Input is empty'
+	sys.exit(0)
+
     if verbose:
-	n_sequences = len(sequences_lengths)
+	n_sequences = len(sequences_lengths)	
 	avg_seq_length = sum(sequences_lengths)/float(n_sequences)
 	max_seq_length = max(sequences_lengths)
 

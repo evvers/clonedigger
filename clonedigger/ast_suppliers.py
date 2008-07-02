@@ -18,6 +18,7 @@
 
 # Abstract Syntax Tree suppliers
 abstract_syntax_tree_suppliers = {}
+import pdb
 
 import python_compiler
 abstract_syntax_tree_suppliers['python'] = python_compiler.PythonCompilerSourceFile

@@ -24,6 +24,7 @@ import sys
 import traceback
 import pdb
 
+import ast_suppliers
 import clone_detection_algorithm
 import arguments 
 import html_report
@@ -50,14 +51,12 @@ The semantics of threshold options is discussed in the paper "Duplicate code det
 --clusterize-using-dcup, mark each statement with its D-cup value instead of the most similar pattern. This option together with --hashing-depth=0 make it possible to catch all considered clones (but it is slow and applicable only to small programs).
 """
 
-from ast_suppliers import *
-
 def main():
     output_file_name = 'output.html'
     optlist, source_file_names = getopt.getopt(sys.argv[1:], '', ['language=', 'output=', 'clustering-threshold=', 'distance-threshold=', 'hashing-depth=', 'size-threshold=', 'clusterize-using-dcup', 'recursive', 'report-statement-marks', 'help', 'dont-print-time', 'force', 'force-diff', 'fast'])
     source_files = [] 
     #TODO remove in release
-    supplier = abstract_syntax_tree_suppliers['python']
+    supplier = ast_suppliers.abstract_syntax_tree_suppliers['python']
     report = html_report.HTMLReport()    
     recursive = False 
     if ('--help', '') in optlist:
