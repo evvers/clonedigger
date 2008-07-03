@@ -16,11 +16,14 @@
 #
 #   You should have received a copy of the GNU General Public License
 #   along with Clone Digger.  If not, see <http://www.gnu.org/licenses/>.
+import sys
+
+if __name__ == '__main__':
+    sys.modules['clonedigger.logilab'] = __import__('logilab')
 
 import re
 import os
 import getopt
-import sys
 import traceback
 import pdb
 
