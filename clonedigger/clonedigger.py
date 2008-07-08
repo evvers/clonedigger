@@ -56,7 +56,7 @@ The semantics of threshold options is discussed in the paper "Duplicate code det
 
 def main():
     output_file_name = 'output.html'
-    optlist, source_file_names = getopt.getopt(sys.argv[1:], '', ['language=', 'output=', 'clustering-threshold=', 'distance-threshold=', 'hashing-depth=', 'size-threshold=', 'clusterize-using-dcup', 'recursive', 'report-statement-marks', 'help', 'dont-print-time', 'force', 'force-diff', 'fast'])
+    optlist, source_file_names = getopt.getopt(sys.argv[1:], '', ['language=', 'output=', 'clustering-threshold=', 'distance-threshold=', 'hashing-depth=', 'size-threshold=', 'clusterize-using-dcup', 'recursive', 'report-statement-marks', 'help', 'dont-print-time', 'force', 'force-diff', 'fast', 'links-for-eclipse'])
     source_files = [] 
     #TODO remove in release
     supplier = ast_suppliers.abstract_syntax_tree_suppliers['python']
@@ -101,6 +101,8 @@ def main():
 	    arguments.use_diff = True
 	elif parameter == '--fast':
 	    arguments.clusterize_using_hash = True
+	elif parameter == '--links-for-eclipse':
+	    arguments.links_for_eclipse = True
     report.startTimer('Construction of AST')
     for file_name in source_file_names:
 	def parse_file(file_name):
