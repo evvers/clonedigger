@@ -37,7 +37,6 @@ class PythonCompilerSourceFile (SourceFile):
     size_threshold = 5
     def __init__(self, file_name):
 	SourceFile.__init__(self, file_name)
-	statements_we_ignore = ["Import"]
 	def rec_build_tree(compiler_ast_node, is_statement=False):
 	    def flatten(list):
 		l = []
@@ -52,8 +51,6 @@ class PythonCompilerSourceFile (SourceFile):
 	    def add_childs(childs):		
 		assert(type(childs) == type([]))
 		for child in childs:
-		    if child.__class__.__name__ in statements_we_ignore:
-			continue
 		    assert(isinstance(child, compiler.ast.Node))
 		    t = rec_build_tree(child, is_statement)
 		    t.setParent(r)
