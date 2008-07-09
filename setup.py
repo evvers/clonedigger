@@ -2,6 +2,10 @@
 """
 This module contains the tool of collective.recipe.buildbot
 """
+
+from ez_setup import use_setuptools
+use_setuptools()
+
 import os
 from setuptools import setup, find_packages
 
