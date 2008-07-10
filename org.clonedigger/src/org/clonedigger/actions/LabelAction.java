@@ -74,11 +74,11 @@ public class LabelAction implements IEditorActionDelegate {
 						pb.command().add("cmd");
 						pb.command().add("/C");
 						pb.command().add(
-								"\"" + FileLocator.getBundleFile(bundle).getAbsolutePath() + "\\runclonedigger.py\" " +
+								"\"\"" + FileLocator.getBundleFile(bundle).getAbsolutePath() + "\\runclonedigger.py\" " +
 								"--links-for-eclipse " +
 								"--output=\"" + htmFile + "\" " +
 								"\"" + path + "\"" +
-						" > \"" + errLog +"\" 2>&1");
+						" > \"" + errLog +"\" 2>&1 \"");
 					}
 					else
 					{
@@ -86,11 +86,11 @@ public class LabelAction implements IEditorActionDelegate {
 						pb.command().add("sh");
 						pb.command().add("-c");
 						pb.command().add(
-								"\"" + FileLocator.getBundleFile(bundle).getAbsolutePath() + "\\runclonedigger.py\" " +
+								"\"\"" + FileLocator.getBundleFile(bundle).getAbsolutePath() + "\\runclonedigger.py\" " +
 								"--links-for-eclipse " +
 								"--output=\"" + htmFile + "\" " +
 								"\"" + path + "\"" +
-						" > \"" + errLog +"\" 2>&1");
+						" > \"" + errLog +"\" 2>&1 \"");
 					}
 					pb.redirectErrorStream(true);
 					
@@ -102,6 +102,8 @@ public class LabelAction implements IEditorActionDelegate {
 					proc.waitFor();
 					proc.destroy();
 					
+					//MessageDialog.openInformation(editor.getSite().getShell(), "CloneDigger Plug-in", "end");
+					
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -110,6 +112,8 @@ public class LabelAction implements IEditorActionDelegate {
 					e.printStackTrace();
 				}
 
+				//MessageDialog.openInformation(editor.getSite().getShell(), "CloneDigger Plug-in", htmFile);
+				
 				if((new java.io.File(htmFile)).exists())
 				try {
 
