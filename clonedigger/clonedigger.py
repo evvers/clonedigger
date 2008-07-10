@@ -156,7 +156,13 @@ The semantics of threshold options is discussed in the paper "Duplicate code det
     for duplicate in duplicates:
         report.addClone(duplicate)
     report.sortByCloneSize()
-    report.writeReport(output_file_name)
+    try:
+	report.writeReport(output_file_name)
+    except:
+	print "catched error, removing output file"
+	if os.path.exists(output_file_name):
+	    os.remove(output_file_name)
+	raise 
 
 if __name__ == '__main__':
     main()
