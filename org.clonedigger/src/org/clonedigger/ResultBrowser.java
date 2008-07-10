@@ -85,7 +85,7 @@ public class ResultBrowser extends WebBrowserEditor {
 				/*
 				MessageDialog.openInformation(
 						null,
-						"Helloworld Plug-in",
+						"CloneDigger Plug-in",
 						event.location.substring(0, 7)				
 					);
 				/**/
