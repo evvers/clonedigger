@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
+   <description url="http://clonedigger.svn.sourceforge.net/svnroot/clonedigger/trunk/org.clonedigger.feature/">
+   </description>
    <feature url="features/org.clonedigger.featue_1.0.7.jar" id="org.clonedigger.featue" version="1.0.7">
       <category name="Clone digger Eclipse plugin"/>
    </feature>
