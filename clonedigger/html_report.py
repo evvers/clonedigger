@@ -82,7 +82,7 @@ class HTMLReport(Report):
 	    if arguments.links_for_eclipse:
 		s+= '<TR>'
 		for j in [0,1]:
-		    s+= '<TD> <a href="clone://%s?%d&%d"> Go to this fragment in Eclipse </a> </TD>'%(clone[j].getSourceFile().getFileName(), min(clone[j][0].getCoveredLineNumbers()), max(clone[j][0].getCoveredLineNumbers()))
+		    s+= '<TD> <a href="clone://%s?%d&%d"> Go to this fragment in Eclipse </a> </TD>'%(clone[j].getSourceFile().getFileName(), min(clone[j][0].getCoveredLineNumbers()), max(clone[j][-1].getCoveredLineNumbers()))
 		    if j==0:
 			s += '<TD></TD>'
 		s+= '</TR>'
