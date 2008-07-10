@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<site>
-   <feature url="features/org.clonedigger.featue_1.0.0.jar" id="org.clonedigger.featue" version="1.0.0">
-      <category name="Clone digger Eclipse plugin"/>
-   </feature>
-   <category-def name="Clone digger Eclipse plugin" label="Clone digger Eclipse plugin"/>
-</site>
