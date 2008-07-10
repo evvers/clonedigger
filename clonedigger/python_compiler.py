@@ -35,7 +35,7 @@ class PythonCompilerSourceFile (SourceFile):
     extension = 'py'
     distance_threshold = 5
     size_threshold = 5
-    ignored_statements = ['Import']
+    ignored_statements = ['Import', 'From']
     def __init__(self, file_name):
 	SourceFile.__init__(self, file_name)
 	def rec_build_tree(compiler_ast_node, is_statement=False):
