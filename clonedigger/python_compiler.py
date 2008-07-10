@@ -35,6 +35,7 @@ class PythonCompilerSourceFile (SourceFile):
     extension = 'py'
     distance_threshold = 5
     size_threshold = 5
+    ignored_statements = ['Import']
     def __init__(self, file_name):
 	SourceFile.__init__(self, file_name)
 	def rec_build_tree(compiler_ast_node, is_statement=False):
@@ -50,14 +51,17 @@ class PythonCompilerSourceFile (SourceFile):
 		return l
 	    def add_childs(childs):		
 		assert(type(childs) == type([]))
-		for child in childs:
+		for child in childs:		    
 		    assert(isinstance(child, compiler.ast.Node))
-		    t = rec_build_tree(child, is_statement)
+		    t = rec_build_tree(child, is_statement)	
+		    if t.getName() in self.ignored_statements:
+			# TODO move it up
+			continue
 		    t.setParent(r)
 		    r.addChild(t)		    
 	    def add_leaf_child(child, name):
 		assert(not (type(child) == type([])))
-		assert(not isinstance(child, compiler.ast.Node))
+		assert(not isinstance(child, compiler.ast.Node))		
 		t = AbstractSyntaxTree(repr(child))
 		t.setParent(r)
 		l = PythonNodeLeaf(child)
@@ -154,6 +158,8 @@ class PythonCompilerSourceFile (SourceFile):
 		else:
 		    for c in compiler_ast_node.getChildren():		    
 			t = rec_build_tree(c, is_statement)
+			if t.getName() in self.ignored_statements:
+			    continue			
 			t.setParent(r)
 			r.addChild(t)
 		return r
