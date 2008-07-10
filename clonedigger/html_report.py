@@ -86,7 +86,6 @@ class HTMLReport(Report):
 		    if j==0:
 			s += '<TD></TD>'
 		s+= '</TR>'
-	    s+= '<TR>'
 	    for j in [0,1]:
 		s+= '<TD>'
 		s+= 'Source file "%s"<BR>' %(clone[j].getSourceFile().getFileName(),)
