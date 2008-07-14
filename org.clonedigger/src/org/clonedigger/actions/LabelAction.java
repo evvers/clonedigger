@@ -52,25 +52,32 @@ public class LabelAction implements IViewActionDelegate, IEditorActionDelegate, 
 	public void run(IAction action) {
 		editor.doSave(null);
 		String path = null;
+		boolean WINDOWS = java.io.File.separatorChar == '\\';
 		
 		IEditorInput editorInput = editor.getEditorInput();
 		
 		if (editorInput instanceof IURIEditorInput) {
 			
 			IURIEditorInput uei = (IURIEditorInput)editorInput;
-			path = uei.getURI().getPath().substring(1);
+			if(WINDOWS)
+				path = uei.getURI().getPath().substring(1);
+			else
+				path = uei.getURI().getPath();
 			if (path != null) {
 
 				MessageDialog.openInformation(editor.getSite().getShell(), "CloneDigger Plug-in", path);
-								
-				String htmFile = System.getProperty("java.io.tmpdir") + "cde_output.htm";
 				
-				String errLog = System.getProperty("java.io.tmpdir") + "cde_error.log";
+				String tempdir = System.getProperty("java.io.tmpdir");
+
+				if ( !(tempdir.endsWith("/") || tempdir.endsWith("\\")) )
+				   tempdir = tempdir + System.getProperty("file.separator");
+								
+				String htmFile = tempdir + "cde_output.htm";
+				
+				String errLog = tempdir + "cde_error.log";
 				
 				try {
 					Bundle bundle = Platform.getBundle("org.clonedigger");
-					
-					boolean WINDOWS = java.io.File.separatorChar == '\\';
 					
 					(new java.io.File(htmFile)).delete();
 					
@@ -94,7 +101,7 @@ public class LabelAction implements IViewActionDelegate, IEditorActionDelegate, 
 						pb.command().add("sh");
 						pb.command().add("-c");
 						pb.command().add(
-								"\"\"" + FileLocator.getBundleFile(bundle).getAbsolutePath() + "\\runclonedigger.py\" " +
+								"\"\"" + FileLocator.getBundleFile(bundle).getAbsolutePath() + "/runclonedigger.py\" " +
 								"--links-for-eclipse " +
 								"--output=\"" + htmFile + "\" " +
 								"\"" + path + "\"" +
@@ -103,6 +110,7 @@ public class LabelAction implements IViewActionDelegate, IEditorActionDelegate, 
 					pb.redirectErrorStream(true);
 					
 					MessageDialog.openInformation(editor.getSite().getShell(), "CloneDigger Plug-in", pb.command().toString());
+					System.err.println(pb.command().toString());
 					
 					Process proc = pb.start();
 					
