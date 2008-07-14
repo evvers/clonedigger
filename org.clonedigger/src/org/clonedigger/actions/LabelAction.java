@@ -7,13 +7,16 @@ import java.net.URL;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.action.IAction;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.IEditorActionDelegate;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IObjectActionDelegate;
 import org.eclipse.ui.IURIEditorInput;
+import org.eclipse.ui.IViewActionDelegate;
+import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.internal.browser.WebBrowserEditorInput;
@@ -27,8 +30,12 @@ import org.osgi.framework.Bundle;
  * delegated to it.
  * @see IWorkbenchWindowActionDelegate
  */
-public class LabelAction implements IEditorActionDelegate {
-	private IEditorPart editor; 
+@SuppressWarnings("restriction")
+public class LabelAction implements IViewActionDelegate, IEditorActionDelegate, IObjectActionDelegate {
+	private IEditorPart editor;
+	private IViewPart view;
+	private IWorkbenchPart part; 
+	
 	/**
 	 * The constructor.
 	 */
@@ -162,8 +169,17 @@ public class LabelAction implements IEditorActionDelegate {
 	public void dispose() {
 	}
 	
-	public void setActiveEditor(IAction action, IEditorPart targetEditor)
-	{
+	public void setActiveEditor(IAction action, IEditorPart targetEditor) {
 		editor = targetEditor;
+	}
+
+	@Override
+	public void init(IViewPart view) {
+		this.view = view;
+	}
+
+	@Override
+	public void setActivePart(IAction action, IWorkbenchPart targetPart) {
+		part = targetPart;		
 	}
 }

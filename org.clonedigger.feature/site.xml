@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <description url="http://clonedigger.svn.sourceforge.net/svnroot/clonedigger/trunk/org.clonedigger.feature/">
+   <description url="http://clonedigger.sourceforge.net/">
       
    </description>
    <feature url="features/org.clonedigger.featue_1.0.7.jar" id="org.clonedigger.featue" version="1.0.7">

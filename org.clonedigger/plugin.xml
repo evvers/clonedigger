@@ -57,4 +57,45 @@
             name="name">
       </editor>
    </extension>
+   <extension
+         point="org.eclipse.ui.viewActions">
+      <viewerContribution
+            id="org.clonedigger.ProjectExplorerContribution"
+            targetID="org.eclipse.ui.navigator.ProjectExplorer">
+         <menu
+               id="org.clonedigger.resourceNavigatorMenu"
+               label="Clone Digger"
+               path="additions">
+            <separator
+                  name="resourceNavigatorSubMenu">
+            </separator>
+         </menu>
+         <action
+               class="org.clonedigger.actions.LabelAction"
+               enablesFor="1"
+               icon="icons/sample.gif"
+               id="org.clonedigger.ProjectExplorerAction"
+               label="Dig clones"
+               menubarPath="additions">
+            <selection
+                  class="org.eclipse.core.resources.IFile"
+                  name="*.py">
+            </selection>
+         </action>
+      </viewerContribution>
+   </extension>
+   <extension
+         point="org.eclipse.ui.popupMenus">
+      <objectContribution
+            id="org.clonedigger.contribution1"
+            objectClass="org.eclipse.core.resources.IFile">
+         <action
+               class="org.clonedigger.actions.LabelAction"
+               enablesFor="+"
+               id="org.clonedigger.newAction"
+               label="New Action"
+               menubarPath="additions">
+         </action>
+      </objectContribution>
+   </extension>
 </plugin>

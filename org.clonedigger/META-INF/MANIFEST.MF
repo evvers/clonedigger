@@ -8,9 +8,9 @@ Bundle-Vendor: Clone Digger
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.eclipse.ui.ide,
- org.eclipse.core.resources;bundle-version="3.4.0",
- org.eclipse.ui.editors;bundle-version="3.4.0",
- org.eclipse.ui.browser;bundle-version="3.2.200"
+ org.eclipse.core.resources;bundle-version="3.2.0",
+ org.eclipse.ui.editors;bundle-version="3.2.0",
+ org.eclipse.ui.browser;bundle-version="3.2.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Import-Package: org.eclipse.core.filesystem,
  org.eclipse.jface.text
