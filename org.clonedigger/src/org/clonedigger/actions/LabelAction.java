@@ -7,6 +7,7 @@ import java.net.URL;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.IEditorActionDelegate;
 import org.eclipse.ui.IEditorInput;
@@ -60,8 +61,8 @@ public class LabelAction implements IViewActionDelegate, IEditorActionDelegate, 
 			path = uei.getURI().getPath().substring(1);
 			if (path != null) {
 
-				//MessageDialog.openInformation(editor.getSite().getShell(), "CloneDigger Plug-in", path);
-				
+				MessageDialog.openInformation(editor.getSite().getShell(), "CloneDigger Plug-in", path);
+								
 				String htmFile = System.getProperty("java.io.tmpdir") + "cde_output.htm";
 				
 				String errLog = System.getProperty("java.io.tmpdir") + "cde_error.log";
@@ -101,6 +102,8 @@ public class LabelAction implements IViewActionDelegate, IEditorActionDelegate, 
 					}
 					pb.redirectErrorStream(true);
 					
+					MessageDialog.openInformation(editor.getSite().getShell(), "CloneDigger Plug-in", pb.command().toString());
+					
 					Process proc = pb.start();
 					
 					proc.getOutputStream().write(4);
@@ -109,7 +112,7 @@ public class LabelAction implements IViewActionDelegate, IEditorActionDelegate, 
 					proc.waitFor();
 					proc.destroy();
 					
-					//MessageDialog.openInformation(editor.getSite().getShell(), "CloneDigger Plug-in", "end");
+					MessageDialog.openInformation(editor.getSite().getShell(), "CloneDigger Plug-in", "end");
 					
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
@@ -119,7 +122,7 @@ public class LabelAction implements IViewActionDelegate, IEditorActionDelegate, 
 					e.printStackTrace();
 				}
 
-				//MessageDialog.openInformation(editor.getSite().getShell(), "CloneDigger Plug-in", htmFile);
+				MessageDialog.openInformation(editor.getSite().getShell(), "CloneDigger Plug-in", htmFile);
 				
 				if((new java.io.File(htmFile)).exists())
 				try {
