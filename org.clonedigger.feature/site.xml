@@ -3,7 +3,7 @@
    <description url="http://clonedigger.sourceforge.net/">
       
    </description>
-   <feature url="features/org.clonedigger.featue_1.0.7.jar" id="org.clonedigger.featue" version="1.0.7">
+   <feature url="features/org.clonedigger.featue_1.0.8.jar" id="org.clonedigger.featue" version="1.0.8">
       <category name="Clone digger Eclipse plugin"/>
    </feature>
    <category-def name="Clone digger Eclipse plugin" label="Clone digger Eclipse plugin"/>
