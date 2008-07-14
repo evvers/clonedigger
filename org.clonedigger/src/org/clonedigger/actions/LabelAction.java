@@ -134,7 +134,11 @@ public class LabelAction implements IViewActionDelegate, IEditorActionDelegate, 
 
 					IWorkbenchPage page = editor.getSite().getWorkbenchWindow().getActivePage();
 					
-					IEditorInput htmInput = new WebBrowserEditorInput(new URL("file:/" + htmFile), 0);
+					IEditorInput htmInput = null;
+					if(WINDOWS)
+						htmInput = new WebBrowserEditorInput(new URL("file:/" + htmFile), 0);
+					else
+						htmInput = new WebBrowserEditorInput(new URL("file:" + htmFile), 0);
 				
 					IEditorPart	htmEditor = 
 						(IEditorPart)page.openEditor(htmInput,

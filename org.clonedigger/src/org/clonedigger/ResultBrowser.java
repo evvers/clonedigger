@@ -37,7 +37,7 @@ public class ResultBrowser extends WebBrowserEditor {
 			{
 				try
 				{ 
-					String [] args = event.location.split("clone:/|\\?|&");
+					String [] args = event.location.split("clone:///|clone://|\\?|&");
 
 					IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
 					
