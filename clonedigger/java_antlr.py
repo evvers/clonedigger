@@ -32,7 +32,7 @@ class JavaANTLRSourceFile (SourceFile):
 	    def __init__(self, start_node, parent):
 		self.parent = parent
 		self.stack = [start_node]
-	    def start_element(self, xml_node_name, attrs):
+	    def start_element(expat_self, xml_node_name, attrs):
 		line_number = int(attrs["line_number"])-1
 		line_numbers = [line_number]
 		if line_numbers == [-1]:
@@ -43,8 +43,8 @@ class JavaANTLRSourceFile (SourceFile):
 		    r.markAsStatement()
 		else:
 		    assert(xml_node_name == "node")
-		self.stack[-1].addChild(r)		
-		self.stack.append(r)
+		expat_self.stack[-1].addChild(r)		
+		expat_self.stack.append(r)
 	    def end_element(self, name):
 		self.stack.pop()
 
