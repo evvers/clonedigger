@@ -85,7 +85,7 @@ public class LabelAction implements IViewActionDelegate, IEditorActionDelegate, 
 					
 					if(WINDOWS)
 					{
-						//cmd /C "command"  > nul 2>&1
+						//cmd /C ""command"  > nul 2>&1"
 						pb.command().add("cmd");
 						pb.command().add("/C");
 						pb.command().add(
@@ -97,15 +97,15 @@ public class LabelAction implements IViewActionDelegate, IEditorActionDelegate, 
 					}
 					else
 					{
-						//sh -c "command"  > /dev/null 2>&1
+						//sh -c '"command"  > /dev/null 2>&1'
 						pb.command().add("sh");
 						pb.command().add("-c");
 						pb.command().add(
-								"'python \"" + FileLocator.getBundleFile(bundle).getAbsolutePath() + "/runclonedigger.py\" " +
+								"python \"" + FileLocator.getBundleFile(bundle).getAbsolutePath() + "/runclonedigger.py\" " +
 								"--links-for-eclipse " +
 								"--output=\"" + htmFile + "\" " +
 								"\"" + path + "\"" +
-						" > \"" + errLog +"\" 2>&1 '");
+						" > \"" + errLog +"\" 2>&1 ");
 					}
 					pb.redirectErrorStream(true);
 					
@@ -113,9 +113,6 @@ public class LabelAction implements IViewActionDelegate, IEditorActionDelegate, 
 					System.err.println(pb.command().toString());
 					
 					Process proc = pb.start();
-					
-					//proc.getOutputStream().write(4);
-					//proc.getOutputStream().flush();
 					
 					proc.waitFor();
 					proc.destroy();
