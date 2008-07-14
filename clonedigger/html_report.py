@@ -189,7 +189,8 @@ class HTMLReport(Report):
 		s += '</TR>\n'
 	    s+= '</TABLE> </P> <HR>'
 	    clone_descriptions.append(s)
-	descr = """<P><B>Source files:</B><BR>%s</P>
+	descr = """<P>Source files: %d</P>
+	<a href = "javascript:unhide('files');">Click here to show/hide file names</a><div id="files" class="hidden"><P><B>Source files:</B><BR>%s</P></div>
 	<P>Clones detected: %d</P>
 	<P>%d of %d lines are duplicates (%.2f%%) </P>
 <P>
@@ -201,7 +202,7 @@ hashing_depth = %d<BR>
 clusterize_using_hash = %s<BR>
 clusterize_using_dcup = %s<BR>
 </P> 
-	""" % (', <BR>'.join(self._file_names), len(self._clones), self.covered_source_lines_count, self.all_source_lines_count, (not self.all_source_lines_count and 100) or 100*self.covered_source_lines_count/float(self.all_source_lines_count), arguments.clustering_threshold, arguments.distance_threshold, arguments.size_threshold, arguments.hashing_depth, str(arguments.clusterize_using_hash), str(arguments.clusterize_using_dcup))
+	""" % (len(self._file_names), ', <BR>'.join(self._file_names), len(self._clones), self.covered_source_lines_count, self.all_source_lines_count, (not self.all_source_lines_count and 100) or 100*self.covered_source_lines_count/float(self.all_source_lines_count), arguments.clustering_threshold, arguments.distance_threshold, arguments.size_threshold, arguments.hashing_depth, str(arguments.clusterize_using_hash), str(arguments.clusterize_using_dcup))
 	if arguments.print_time:
 	    timings = '<B>Time elapsed</B><BR>'
 	    timings+= '<BR>\n'.join(['%s : %.2f seconds'%(i[0], i[1]) for i in self._timers])
