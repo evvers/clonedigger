@@ -114,8 +114,8 @@ public class LabelAction implements IViewActionDelegate, IEditorActionDelegate, 
 					
 					Process proc = pb.start();
 					
-					proc.getOutputStream().write(4);
-					proc.getOutputStream().flush();
+					//proc.getOutputStream().write(4);
+					//proc.getOutputStream().flush();
 					
 					proc.waitFor();
 					proc.destroy();
