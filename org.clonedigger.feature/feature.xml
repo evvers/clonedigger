@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
-      id="org.clonedigger.featue"
+      id="org.clonedigger.feature"
       label="CloneDigger Feature"
-      version="1.0.8"
+      version="1.0.10"
       plugin="org.clonedigger">
 
    <description url="http://www.example.com/description">

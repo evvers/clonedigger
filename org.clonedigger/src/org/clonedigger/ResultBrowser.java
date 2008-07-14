@@ -29,16 +29,14 @@ public class ResultBrowser extends WebBrowserEditor {
 	private class CloneLocation implements LocationListener
 	{
 
-		@Override
 		public void changed(LocationEvent event) {}
 
-		@Override
 		public void changing(LocationEvent event) 
 		{
 			if(event.location.startsWith("clone:/"))
 			{
 				try
-				{
+				{ 
 					String [] args = event.location.split("clone:/|\\?|&");
 
 					IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();

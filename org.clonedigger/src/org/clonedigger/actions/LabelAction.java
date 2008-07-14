@@ -173,12 +173,10 @@ public class LabelAction implements IViewActionDelegate, IEditorActionDelegate, 
 		editor = targetEditor;
 	}
 
-	@Override
 	public void init(IViewPart view) {
 		this.view = view;
 	}
 
-	@Override
 	public void setActivePart(IAction action, IWorkbenchPart targetPart) {
 		part = targetPart;		
 	}
