@@ -101,11 +101,11 @@ public class LabelAction implements IViewActionDelegate, IEditorActionDelegate, 
 						pb.command().add("sh");
 						pb.command().add("-c");
 						pb.command().add(
-								"\"\"" + FileLocator.getBundleFile(bundle).getAbsolutePath() + "/runclonedigger.py\" " +
+								"'python \"" + FileLocator.getBundleFile(bundle).getAbsolutePath() + "/runclonedigger.py\" " +
 								"--links-for-eclipse " +
 								"--output=\"" + htmFile + "\" " +
 								"\"" + path + "\"" +
-						" > \"" + errLog +"\" 2>&1 \"");
+						" > \"" + errLog +"\" 2>&1 '");
 					}
 					pb.redirectErrorStream(true);
 					
