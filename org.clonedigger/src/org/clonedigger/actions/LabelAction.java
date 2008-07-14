@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import org.eclipse.core.filesystem.EFS;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.action.IAction;
@@ -20,6 +22,7 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.internal.browser.WebBrowserEditorInput;
 import org.osgi.framework.Bundle;
 
@@ -59,10 +62,15 @@ public class LabelAction implements IViewActionDelegate, IEditorActionDelegate, 
 		if (editorInput instanceof IURIEditorInput) {
 			
 			IURIEditorInput uei = (IURIEditorInput)editorInput;
-			if(WINDOWS)
-				path = uei.getURI().getPath().substring(1);
-			else
-				path = uei.getURI().getPath();
+			
+			path = uei.getURI().getPath();
+			
+			if(WINDOWS) path = path.replaceAll("^/+", "");
+
+			//!!!DO NOT use this string or you will have wrong links in browser!!!
+			//path = EFS.getLocalFileSystem().getStore(uei.getURI()).toLocalFile(0, null).getAbsolutePath();
+			
+			
 			if (path != null) {
 
 				MessageDialog.openInformation(editor.getSite().getShell(), "CloneDigger Plug-in", path);
@@ -97,7 +105,7 @@ public class LabelAction implements IViewActionDelegate, IEditorActionDelegate, 
 					}
 					else
 					{
-						//sh -c '"command"  > /dev/null 2>&1'
+						//sh -c python "..." "..." > /dev/null 2>&1
 						pb.command().add("sh");
 						pb.command().add("-c");
 						pb.command().add(
@@ -135,11 +143,8 @@ public class LabelAction implements IViewActionDelegate, IEditorActionDelegate, 
 					IWorkbenchPage page = editor.getSite().getWorkbenchWindow().getActivePage();
 					
 					IEditorInput htmInput = null;
-					if(WINDOWS)
-						htmInput = new WebBrowserEditorInput(new URL("file:/" + htmFile), 0);
-					else
-						htmInput = new WebBrowserEditorInput(new URL("file:" + htmFile), 0);
-				
+					htmInput = new WebBrowserEditorInput(new URL("file:/" + htmFile.replaceAll("^/+", "")), 0);
+									
 					IEditorPart	htmEditor = 
 						(IEditorPart)page.openEditor(htmInput,
 							"org.clonedigger.resultbrowser");

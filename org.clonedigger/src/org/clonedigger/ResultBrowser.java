@@ -33,11 +33,11 @@ public class ResultBrowser extends WebBrowserEditor {
 
 		public void changing(LocationEvent event) 
 		{
-			if(event.location.startsWith("clone:/"))
+			if(event.location.startsWith("clone:"))
 			{
 				try
 				{ 
-					String [] args = event.location.split("clone:///|clone://|\\?|&");
+					String [] args = event.location.split("clone:|\\?|&");
 
 					IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
 					
@@ -48,7 +48,7 @@ public class ResultBrowser extends WebBrowserEditor {
 					
 					if(file == null)
 					{
-						IFileStore fileStore = EFS.getLocalFileSystem().getStore(new URI("file:/" + args[1]));
+						IFileStore fileStore = EFS.getLocalFileSystem().getStore(new URI("file:/" + args[1].replaceAll("^/+", "")));
 						editInput = new FileStoreEditorInput(fileStore);
 					}
 					else
@@ -57,8 +57,9 @@ public class ResultBrowser extends WebBrowserEditor {
 					}
 
 					ITextEditor editor = 
-						(ITextEditor)IDE.openEditor(page, editInput, 
-								"org.python.pydev.editor.PythonEditor", true);
+						(ITextEditor)IDE.openEditor(page, editInput,
+								IDE.getEditorDescriptor(args[1]).getId(), true);
+								//"org.python.pydev.editor.PythonEditor", true);
 					IDocument doc = editor.getDocumentProvider().getDocument(editInput);
 
 					try
