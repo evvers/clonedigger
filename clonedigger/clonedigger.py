@@ -120,6 +120,7 @@ The semantics of threshold options is discussed in the paper "Duplicate code det
             sys.stdout.flush()
             source_file = supplier(file_name)
             source_file.getTree().propagateCoveredLineNumbers()
+            source_file.getTree().propagateHeight()
             source_files.append(source_file)
             report.addFileName(file_name)                
             print 'done'
