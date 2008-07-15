@@ -305,10 +305,13 @@ def findDuplicateCode(source_files, report):
     if verbose:
 	print len(duplicate_candidates), ' sequences were found'
 	print 'Refining candidates...',
-	sys.stdout.flush()
-    report.startTimer('Refining candidates')
-    clones = refineDuplicates(duplicate_candidates)
-    report.stopTimer()
+	sys.stdout.flush()    
+    if arguments.distance_threshold>0:
+	report.startTimer('Refining candidates')
+	clones = refineDuplicates(duplicate_candidates)
+	report.stopTimer()
+    else:
+	clones = duplicate_candidates
     if verbose:
 	print len(clones), 'clones were found'
 	print 'Removing dominated clones...',
