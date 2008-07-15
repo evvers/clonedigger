@@ -85,7 +85,7 @@ def findDuplicateCode(source_files, report):
 	    statements = hash_to_statement[h]
 	    for statement in statements:
 		processed_statements_count += 1
-		if verbose and ((processed_statements_count % 5000) == 0):
+		if verbose and ((processed_statements_count % 1000) == 0):
 		    print '%d,' %(processed_statements_count,),
 		    sys.stdout.flush()
 		bestcluster = None
@@ -109,11 +109,16 @@ def findDuplicateCode(source_files, report):
 	return ret
 
     def clusterize(hash_to_statement, clusters_map):
+	processed_statements_count = 0
 	# clusters_map contain hash values for statements, not unifiers
 	# therefore it will work correct even if unifiers are smaller than hashing depth value
 	for h in hash_to_statement.keys():
 	    clusters = clusters_map[h]
 	    for statement in hash_to_statement[h]:
+		processed_statements_count += 1
+		if verbose and ((processed_statements_count % 1000) == 0):
+		    print '%d,' %(processed_statements_count,),
+		    sys.stdout.flush()
 		mincost = sys.maxint
 		for cluster in clusters:
 		    new_u = Unifier(cluster.getUnifierTree(), statement)
