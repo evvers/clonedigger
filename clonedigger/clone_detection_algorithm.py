@@ -166,13 +166,15 @@ def findDuplicateCode(source_files, report):
     def findHugeSequences():
 	def f_size(x):	  
 	    return x.getMaxCoveredLines()
+	def f_elem(x):
+	    return StatementSequence(x).getCoveredLineNumbersCount()
 	def fcode(x):
 	    return x.getMark()
         f = f_size
 	suffix_tree_instance = suffix_tree.SuffixTree(fcode)
 	for sequence in statement_sequences:
 	    suffix_tree_instance.add(sequence)
-	return [PairSequences([StatementSequence(s1), StatementSequence(s2)]) for (s1,s2) in suffix_tree_instance.getBestMaxSubstrings(arguments.size_threshold, f)]
+	return [PairSequences([StatementSequence(s1), StatementSequence(s2)]) for (s1,s2) in suffix_tree_instance.getBestMaxSubstrings(arguments.size_threshold, f, f_elem)]
     def refineDuplicates(pairs_sequences):
 	r = []
 	flag = False
