@@ -115,7 +115,12 @@ class AbstractSyntaxTree:
 	self._covered_line_numbers = set(self._line_numbers)
 	for child in self.getChilds():
 	    self._covered_line_numbers.update(child.propagateCoveredLineNumbers())
-	return self._covered_line_numbers
+	if self._covered_line_numbers:
+	    mi = min(self._covered_line_numbers)
+	    ma = max(self._covered_line_numbers)
+	    return range(mi, ma+1)
+	else:
+	    return []
     def propagateHeight(self):
 	if self.getChildCount()==0:
 	    self._height = 0
