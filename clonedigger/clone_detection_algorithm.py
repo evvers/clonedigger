@@ -46,7 +46,7 @@ def findDuplicateCode(source_files, report):
 	sequences = []
 	if not arguments.force:
 	    for sequence in sequences_without_restriction:
-		if len(sequence) >1000:
+		if len(sequence) > 1000:
 		    first_statement = sequence[0]
 		    print '-----------------------------------------'
 		    print 'Warning: sequences of statements, consists of %d elements is too long.' %(len(sequence),)
@@ -312,7 +312,7 @@ def findDuplicateCode(source_files, report):
 	print len(duplicate_candidates), ' sequences were found'
 	print 'Refining candidates...',
 	sys.stdout.flush()    
-    if arguments.distance_threshold>0:
+    if arguments.distance_threshold!=-1:
 	report.startTimer('Refining candidates')
 	clones = refineDuplicates(duplicate_candidates)
 	report.stopTimer()
@@ -320,12 +320,14 @@ def findDuplicateCode(source_files, report):
 	clones = duplicate_candidates
     if verbose:
 	print len(clones), 'clones were found'
-	print 'Removing dominated clones...',
-	sys.stdout.flush()
-    old_clone_count = len(clones)
-    clones = remove_dominated_clones(clones)
-    if verbose:
-	print len(clones) - old_clone_count, 'clones were removed' 
+    if arguments.distance_threshold!=-1:
+	if verbose:
+	    print 'Removing dominated clones...',
+	    sys.stdout.flush()
+	old_clone_count = len(clones)
+	clones = remove_dominated_clones(clones)
+	if verbose:
+	    print len(clones) - old_clone_count, 'clones were removed' 
 
     covered_source_lines = set()
     for clone in clones:
