@@ -100,7 +100,7 @@ class AbstractSyntaxTree:
 	source_line_numbers = set([])
 	r = []
 	source_line_numbers = self.getCoveredLineNumbers()
-	source_line_numbers_list = list(source_line_numbers)
+	source_line_numbers_list = list(range(min(source_line_numbers), max(source_line_numbers)+1))
 	source_line_numbers_list.sort()
 	for source_line_number in source_line_numbers_list:
 	    r.append(self.getSourceFile().getSourceLine(source_line_number) ) 
@@ -115,12 +115,7 @@ class AbstractSyntaxTree:
 	self._covered_line_numbers = set(self._line_numbers)
 	for child in self.getChilds():
 	    self._covered_line_numbers.update(child.propagateCoveredLineNumbers())
-	if self._covered_line_numbers:
-	    mi = min(self._covered_line_numbers)
-	    ma = max(self._covered_line_numbers)
-	    return range(mi, ma+1)
-	else:
-	    return []
+	return self._covered_line_numbers
     def propagateHeight(self):
 	if self.getChildCount()==0:
 	    self._height = 0
