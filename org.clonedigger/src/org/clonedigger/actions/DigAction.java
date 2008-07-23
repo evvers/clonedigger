@@ -468,6 +468,8 @@ public class DigAction implements IViewActionDelegate, IWorkbenchWindowActionDel
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		System.err.println(runpath);
+		
 		if(WINDOWS) runpath = runpath.substring(1);
 
 		(new java.io.File(htmFile)).delete();
