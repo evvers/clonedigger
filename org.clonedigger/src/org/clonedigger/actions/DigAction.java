@@ -52,15 +52,17 @@ import org.python.pydev.navigator.elements.IWrappedResource;
  * @see IWorkbenchWindowActionDelegate
  */
 @SuppressWarnings("restriction")
-public class LabelAction implements IViewActionDelegate, IEditorActionDelegate, IObjectActionDelegate, IPageChangedListener {
+public class DigAction implements IViewActionDelegate, IWorkbenchWindowActionDelegate, IObjectActionDelegate, IPageChangedListener {
 	//private IEditorPart editor;
 	//private IViewPart view;
 	//private IWorkbenchPart part;
+	boolean WINDOWS = java.io.File.separatorChar == '\\';
 	Set<String> selectedFiles = new HashSet<String>();
 	Set<IResource> selectedResources = new HashSet<IResource>();
 	Set<IResource> grayedResources = new HashSet<IResource>();
 	Process digProcess = null;
 	Thread digThread = null;
+	private String htmFile;
 	
 	class ResourcesPage extends WizardPage implements ITreeContentProvider, ILabelProvider, ICheckStateListener
 	{
@@ -242,15 +244,14 @@ public class LabelAction implements IViewActionDelegate, IEditorActionDelegate, 
 		@Override
 		public void createControl(Composite parent) {
 			Composite composite = new Composite(parent, SWT.NONE);
-			// create the desired layout for this wizard page
 			GridLayout gl = new GridLayout();
 			int ncol = 1;
 			gl.numColumns = ncol;
 			composite.setLayout(gl);
 			
-			new Label(composite, SWT.NONE).setText("Select language:");
+			//new Label(composite, SWT.NONE).setText("Output console:");
 			
-			console = new Text(composite, SWT.READ_ONLY | SWT.WRAP | SWT.MULTI | SWT.BORDER);
+			console = new Text(composite, SWT.READ_ONLY | SWT.WRAP | SWT.MULTI | SWT.BORDER | SWT.V_SCROLL);
 			console.setLayoutData(new GridData(GridData.FILL_HORIZONTAL | GridData.FILL_VERTICAL));
 			console.setBackground(new Color(null, 0,0,0));
 			console.setForeground(new Color(null, 255,255,255));
@@ -273,8 +274,25 @@ public class LabelAction implements IViewActionDelegate, IEditorActionDelegate, 
 
 		@Override
 		public boolean performFinish() {
+			if((new java.io.File(htmFile)).exists())
+				try {
 
-			return false;
+					IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+
+					IEditorInput htmInput = null;
+					htmInput = new WebBrowserEditorInput(new URL("file:/" + htmFile.replaceAll("^/+", "")), 0);
+
+					//IEditorPart	htmEditor = (IEditorPart)
+					page.openEditor(htmInput,
+						"org.clonedigger.resultbrowser");
+						//"org.eclipse.ui.browser.editor");		
+
+				} catch (MalformedURLException e) {
+					e.printStackTrace();
+				} catch (PartInitException e) {
+					e.printStackTrace();
+				}
+			return true;
 		}
 		
 		@Override
@@ -284,7 +302,7 @@ public class LabelAction implements IViewActionDelegate, IEditorActionDelegate, 
 			try {
 				digProcess.waitFor();
 				digThread.interrupt();
-				digThread.join();
+				//digThread.join();
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -297,7 +315,7 @@ public class LabelAction implements IViewActionDelegate, IEditorActionDelegate, 
 	/**
 	 * The constructor
 	 */
-	public LabelAction() {
+	public DigAction() {
 	}
 
 	/**
@@ -313,140 +331,12 @@ public class LabelAction implements IViewActionDelegate, IEditorActionDelegate, 
 		Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
 		
 		if(!PlatformUI.getWorkbench().saveAllEditors(true)) return;
-		
-		boolean WINDOWS = java.io.File.separatorChar == '\\';
-		
-		String path = "";
-		
-		for(String file: selectedFiles) path += "\"" + file + "\" ";
-		
-		FileDialog dialog = 
-			new FileDialog(shell);
-		//dialog.open();
-		
-		//ResourcesPlugin.getWorkspace().getRoot()
-		ResourceSelectionDialog dialog2 =
-			new ResourceSelectionDialog(shell, ResourcesPlugin.getWorkspace().getRoot(), "msg");
-		dialog2.setInitialSelections(selectedResources.toArray());
-		//dialog2.open();
-		
-		ResourceListSelectionDialog dialog3 = 
-			new ResourceListSelectionDialog(shell, selectedResources.toArray(new IResource[0]));
-		
-		//dialog3.open();
-
-		ContainerSelectionDialog dialog4 =
-		    new ContainerSelectionDialog(shell, ResourcesPlugin.getWorkspace().getRoot(), true, "msg");
-		dialog4.setInitialSelections(selectedResources.toArray());
-		//dialog4.open();
-		
+				
 		DigWizard digWizard = new DigWizard();
 		WizardDialog wd = new WizardDialog(shell, digWizard);
 		wd.addPageChangedListener(this);
 		wd.open();
 		
-		if(true) return;
-		
-		/*
-		
-		IEditorInput editorInput = editor.getEditorInput();
-				
-		if (editorInput instanceof IURIEditorInput) {
-			
-			IURIEditorInput uei = (IURIEditorInput)editorInput;
-			
-			path = uei.getURI().getPath();
-			
-			if(WINDOWS) path = path.replaceAll("^/+", "");
-
-			//!!!DO NOT use this thing or you will have wrong links in browser!!!
-			//path = EFS.getLocalFileSystem().getStore(uei.getURI()).toLocalFile(0, null).getAbsolutePath();
-			
-			if (path != null) { /**/
-
-		MessageDialog.openInformation(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), "CloneDigger Plug-in", path);
-
-		String tempdir = System.getProperty("java.io.tmpdir");
-
-		if ( !(tempdir.endsWith("/") || tempdir.endsWith("\\")) )
-			tempdir = tempdir + System.getProperty("file.separator");
-
-		String htmFile = tempdir + "cde_output.htm";
-
-		String errLog = tempdir + "cde_error.log";
-
-		try {
-			Bundle bundle = Platform.getBundle("org.clonedigger");
-
-			(new java.io.File(htmFile)).delete();
-
-			ProcessBuilder pb = new ProcessBuilder();
-
-			if(WINDOWS)
-			{
-				//cmd /C ""command"  > nul 2>&1"
-				pb.command().add("cmd");
-				pb.command().add("/C");
-				pb.command().add(
-						"\"\"" + FileLocator.getBundleFile(bundle).getAbsolutePath() + "\\runclonedigger.py\" " +
-						"--links-for-eclipse " +
-						"--output=\"" + htmFile + "\" " +
-						path +
-						" > \"" + errLog +"\" 2>&1 \"");
-			}
-			else
-			{
-				//sh -c python "..." "..." > /dev/null 2>&1
-				pb.command().add("sh");
-				pb.command().add("-c");
-				pb.command().add(
-						"python \"" + FileLocator.getBundleFile(bundle).getAbsolutePath() + "/runclonedigger.py\" " +
-						"--links-for-eclipse " +
-						"--output=\"" + htmFile + "\" " +
-						path +
-						" > \"" + errLog +"\" 2>&1 ");
-			}
-			pb.redirectErrorStream(true);
-
-			MessageDialog.openInformation(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), "CloneDigger Plug-in", pb.command().toString());
-			System.err.println(pb.command().toString());
-
-			Process proc = pb.start();
-
-			proc.waitFor();
-			proc.destroy();
-
-			MessageDialog.openInformation(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), "CloneDigger Plug-in", "end");
-
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		MessageDialog.openInformation(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), "CloneDigger Plug-in", htmFile);
-
-		if((new java.io.File(htmFile)).exists())
-			try {
-
-				IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-
-				IEditorInput htmInput = null;
-				htmInput = new WebBrowserEditorInput(new URL("file:/" + htmFile.replaceAll("^/+", "")), 0);
-
-				IEditorPart	htmEditor = 
-					(IEditorPart)page.openEditor(htmInput,
-							"org.clonedigger.resultbrowser");
-				//"org.eclipse.ui.browser.editor");		
-
-			} catch (MalformedURLException e) {
-				e.printStackTrace();
-			} catch (PartInitException e) {
-				e.printStackTrace();
-			}
-
 	}
 
 	public void selectResource(IResource res, boolean select)
@@ -493,6 +383,7 @@ public class LabelAction implements IViewActionDelegate, IEditorActionDelegate, 
 		IStructuredSelection sel = (IStructuredSelection)selection;
 		selectedFiles.clear();
 		selectedResources.clear();
+		action.setEnabled(true);
 		for(Object obj: sel.toArray())
 		{
 			IResource res = null;
@@ -520,10 +411,6 @@ public class LabelAction implements IViewActionDelegate, IEditorActionDelegate, 
 	public void dispose() {
 	}
 	
-	public void setActiveEditor(IAction action, IEditorPart targetEditor) {
-		//editor = targetEditor;
-	}
-
 	public void init(IViewPart view) {
 		//this.view = view;
 	}
@@ -543,7 +430,7 @@ public class LabelAction implements IViewActionDelegate, IEditorActionDelegate, 
 				try {
 					digProcess.waitFor();
 					digThread.interrupt();
-					digThread.join();
+					//digThread.join();
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
@@ -552,8 +439,73 @@ public class LabelAction implements IViewActionDelegate, IEditorActionDelegate, 
 			}
 			return;
 		}
+		int langidx = ((ResourcesPage) ((ConsolePage) page).getPreviousPage()).langCombo.getSelectionIndex();
 		final ConsolePage consolePage = (ConsolePage) page;
+		consolePage.console.setText("");
 		consolePage.setPageComplete(false);
+		
+		String path = "";
+		
+		for(String f: selectedFiles)
+		{
+			if(langidx == 0 && f.endsWith(".py")) path += "\"" + f + "\" ";
+			if(langidx == 1 && f.endsWith(".java")) path += "\"" + f + "\" ";
+		}
+		
+		System.err.println(path);
+
+		String tempdir = System.getProperty("java.io.tmpdir");
+
+		if ( !(tempdir.endsWith("/") || tempdir.endsWith("\\")) )
+			tempdir = tempdir + System.getProperty("file.separator");
+
+		htmFile = tempdir + "cde_output.htm";
+
+		Bundle bundle = Platform.getBundle("org.clonedigger");
+
+		(new java.io.File(htmFile)).delete();
+
+		ProcessBuilder pb = new ProcessBuilder();
+
+		try {
+			if(WINDOWS)
+			{
+				//cmd /C ""command"  > nul 2>&1"
+				pb.command().add("cmd");
+				pb.command().add("/C");
+				pb.command().add(
+						"\"\"" + FileLocator.getBundleFile(bundle).getAbsolutePath() + "\\runclonedigger.py\" " +
+						"--links-for-eclipse " +
+						"--output=\"" + htmFile + "\" " +
+						path +
+						" 2>&1 \"");
+			}
+			else
+			{
+				//sh -c python "..." "..." > /dev/null 2>&1
+				pb.command().add("sh");
+				pb.command().add("-c");
+				pb.command().add(
+						"python \"" + FileLocator.getBundleFile(bundle).getAbsolutePath() + "/runclonedigger.py\" " +
+						"--links-for-eclipse " +
+						"--output=\"" + htmFile + "\" " +
+						path +
+						" 2>&1 ");
+			}
+
+			pb.redirectErrorStream(true);
+
+			System.err.println(pb.command().toString());
+			
+			consolePage.console.append("Running clonedigger...\n\n");
+
+			digProcess = pb.start();
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		System.err.println("end");
 		
 		digThread = new Thread(new Runnable() {
 			@Override
@@ -575,9 +527,20 @@ public class LabelAction implements IViewActionDelegate, IEditorActionDelegate, 
 				Display.getDefault().syncExec(new Runnable() {
 					@Override
 					public void run() {
+						digProcess = null;
+						digThread = null;
 						consolePage.setPageComplete(true);
+						if((new java.io.File(htmFile)).exists())
+							consolePage.console.append("\nPress finish to view results...");
+						else
+							consolePage.console.append("\nNo output found, press finish to close this wizard...");
 					}});				
 			}});
 		digThread.start();
+	}
+
+	@Override
+	public void init(IWorkbenchWindow window) {
+		
 	}
 }
