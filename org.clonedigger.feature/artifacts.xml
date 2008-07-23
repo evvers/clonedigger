@@ -3,14 +3,14 @@
 <repository name='file:/C:/In/Projects/eclipse/org.clonedigger.featue/ - artifacts' type='org.eclipse.equinox.p2.artifact.repository.simpleRepository' version='1.0.0'>
   <properties size='2'>
     <property name='p2.compressed' value='false'/>
-    <property name='p2.timestamp' value='1216835920140'/>
+    <property name='p2.timestamp' value='1216837376187'/>
   </properties>
   <mappings size='3'>
     <rule filter='(&amp; (classifier=osgi.bundle))' output='${repoUrl}/plugins/${id}_${version}.jar'/>
     <rule filter='(&amp; (classifier=binary))' output='${repoUrl}/binary/${id}_${version}'/>
     <rule filter='(&amp; (classifier=org.eclipse.update.feature))' output='${repoUrl}/features/${id}_${version}.jar'/>
   </mappings>
-  <artifacts size='58'>
+  <artifacts size='59'>
     <artifact classifier='osgi.bundle' id='org.clonedigger' version='1.0.19'>
       <properties size='3'>
         <property name='artifact.size' value='31958'/>
@@ -92,16 +92,16 @@
         <property name='download.contentType' value='application/zip'/>
       </properties>
     </artifact>
-    <artifact classifier='org.eclipse.update.feature' id='org.clonedigger.featue' version='1.0.1'>
-      <properties size='2'>
-        <property name='artifact.size' value='807'/>
-        <property name='download.size' value='807'/>
-      </properties>
-    </artifact>
     <artifact classifier='org.eclipse.update.feature' id='org.clonedigger.feature' version='1.0.11'>
       <properties size='2'>
         <property name='artifact.size' value='854'/>
         <property name='download.size' value='854'/>
+      </properties>
+    </artifact>
+    <artifact classifier='org.eclipse.update.feature' id='org.clonedigger.featue' version='1.0.1'>
+      <properties size='2'>
+        <property name='artifact.size' value='807'/>
+        <property name='download.size' value='807'/>
       </properties>
     </artifact>
     <artifact classifier='osgi.bundle' id='org.clonedigger' version='1.0.11'>
@@ -111,17 +111,17 @@
         <property name='download.contentType' value='application/zip'/>
       </properties>
     </artifact>
+    <artifact classifier='org.eclipse.update.feature' id='org.clonedigger.feature' version='1.0.19'>
+      <properties size='2'>
+        <property name='artifact.size' value='810'/>
+        <property name='download.size' value='810'/>
+      </properties>
+    </artifact>
     <artifact classifier='osgi.bundle' id='org.clonedigger' version='1.0.16'>
       <properties size='3'>
         <property name='artifact.size' value='14352'/>
         <property name='download.size' value='14352'/>
         <property name='download.contentType' value='application/zip'/>
-      </properties>
-    </artifact>
-    <artifact classifier='org.eclipse.update.feature' id='org.clonedigger.feature' version='1.0.19'>
-      <properties size='2'>
-        <property name='artifact.size' value='810'/>
-        <property name='download.size' value='810'/>
       </properties>
     </artifact>
     <artifact classifier='osgi.bundle' id='org.clonedigger' version='1.0.13'>
@@ -163,17 +163,17 @@
         <property name='download.size' value='856'/>
       </properties>
     </artifact>
+    <artifact classifier='org.eclipse.update.feature' id='org.clonedigger.featue' version='1.0.2'>
+      <properties size='2'>
+        <property name='artifact.size' value='808'/>
+        <property name='download.size' value='808'/>
+      </properties>
+    </artifact>
     <artifact classifier='osgi.bundle' id='org.clonedigger' version='1.0.16'>
       <properties size='3'>
         <property name='artifact.size' value='18027'/>
         <property name='download.size' value='18027'/>
         <property name='download.contentType' value='application/zip'/>
-      </properties>
-    </artifact>
-    <artifact classifier='org.eclipse.update.feature' id='org.clonedigger.featue' version='1.0.2'>
-      <properties size='2'>
-        <property name='artifact.size' value='808'/>
-        <property name='download.size' value='808'/>
       </properties>
     </artifact>
     <artifact classifier='osgi.bundle' id='org.clonedigger' version='1.0.15'>
@@ -308,6 +308,13 @@
         <property name='download.size' value='855'/>
       </properties>
     </artifact>
+    <artifact classifier='osgi.bundle' id='org.clonedigger' version='1.0.20'>
+      <properties size='3'>
+        <property name='artifact.size' value='39667'/>
+        <property name='download.size' value='39667'/>
+        <property name='download.contentType' value='application/zip'/>
+      </properties>
+    </artifact>
     <artifact classifier='osgi.bundle' id='org.clonedigger' version='1.0.0'>
       <properties size='3'>
         <property name='artifact.size' value='11986'/>
@@ -334,17 +341,17 @@
         <property name='download.size' value='807'/>
       </properties>
     </artifact>
-    <artifact classifier='osgi.bundle' id='org.clonedigger' version='1.0.17'>
-      <properties size='3'>
-        <property name='artifact.size' value='18027'/>
-        <property name='download.size' value='18027'/>
-        <property name='download.contentType' value='application/zip'/>
-      </properties>
-    </artifact>
     <artifact classifier='osgi.bundle' id='org.clonedigger' version='1.0.1'>
       <properties size='3'>
         <property name='artifact.size' value='17245'/>
         <property name='download.size' value='17245'/>
+        <property name='download.contentType' value='application/zip'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='org.clonedigger' version='1.0.17'>
+      <properties size='3'>
+        <property name='artifact.size' value='18027'/>
+        <property name='download.size' value='18027'/>
         <property name='download.contentType' value='application/zip'/>
       </properties>
     </artifact>
@@ -361,16 +368,16 @@
         <property name='download.contentType' value='application/zip'/>
       </properties>
     </artifact>
-    <artifact classifier='org.eclipse.update.feature' id='org.clonedigger.featue' version='1.0.6'>
-      <properties size='2'>
-        <property name='artifact.size' value='807'/>
-        <property name='download.size' value='807'/>
-      </properties>
-    </artifact>
     <artifact classifier='org.eclipse.update.feature' id='org.clonedigger.feature' version='1.0.20'>
       <properties size='2'>
         <property name='artifact.size' value='810'/>
         <property name='download.size' value='810'/>
+      </properties>
+    </artifact>
+    <artifact classifier='org.eclipse.update.feature' id='org.clonedigger.featue' version='1.0.6'>
+      <properties size='2'>
+        <property name='artifact.size' value='807'/>
+        <property name='download.size' value='807'/>
       </properties>
     </artifact>
     <artifact classifier='osgi.bundle' id='org.clonedigger' version='1.0.0'>

@@ -309,14 +309,21 @@ public class DigAction implements IViewActionDelegate, IWorkbenchWindowActionDel
 		//IEditorPart editor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
 		//editor.doSave(null);
 		
+		System.err.println("run");
+		
 		Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
 		
 		if(!PlatformUI.getWorkbench().saveAllEditors(true)) return;
 				
 		DigWizard digWizard = new DigWizard();
+		
+		System.err.println("Opening Wizard");
+		
 		WizardDialog wd = new WizardDialog(shell, digWizard);
 		wd.addPageChangedListener(this);
 		wd.open();
+		
+		System.err.println("Wizard opened");
 		
 	}
 
@@ -361,9 +368,12 @@ public class DigAction implements IViewActionDelegate, IWorkbenchWindowActionDel
 	 */
 	public void selectionChanged(IAction action, ISelection selection) 
 	{
+		System.err.println("selectionChanged");
+		
 		IStructuredSelection sel = (IStructuredSelection)selection;
 		selectedFiles.clear();
 		selectedResources.clear();
+		grayedResources.clear();
 		action.setEnabled(true);
 		for(Object obj: sel.toArray())
 		{
