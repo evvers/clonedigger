@@ -350,7 +350,7 @@ public class DigAction implements IViewActionDelegate, IWorkbenchWindowActionDel
 			selectedResources.remove(res);
 		
 		grayedResources.remove(res);
-		res = res.getParent();
+		if(res != null) res = res.getParent();
 		while(res != null)
 		{
 			selectedResources.add(res);
@@ -436,6 +436,10 @@ public class DigAction implements IViewActionDelegate, IWorkbenchWindowActionDel
 		
 		String path = "";
 		
+		String ops = "--links-for-eclipse ";
+		
+		if(langidx == 1) ops += "--lang=java ";
+		
 		for(String f: selectedFiles)
 		{
 			if(langidx == 0 && f.endsWith(".py")) path += "\"" + f + "\" ";
@@ -465,7 +469,7 @@ public class DigAction implements IViewActionDelegate, IWorkbenchWindowActionDel
 				pb.command().add("/C");
 				pb.command().add(
 						"\"\"" + FileLocator.getBundleFile(bundle).getAbsolutePath() + "\\runclonedigger.py\" " +
-						"--links-for-eclipse " +
+						ops +
 						"--output=\"" + htmFile + "\" " +
 						path +
 						" 2>&1 \"");
@@ -477,7 +481,7 @@ public class DigAction implements IViewActionDelegate, IWorkbenchWindowActionDel
 				pb.command().add("-c");
 				pb.command().add(
 						"python \"" + FileLocator.getBundleFile(bundle).getAbsolutePath() + "/runclonedigger.py\" " +
-						"--links-for-eclipse " +
+						ops +
 						"--output=\"" + htmFile + "\" " +
 						path +
 						" 2>&1 ");
