@@ -4,43 +4,38 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
-import org.eclipse.core.filesystem.EFS;
-import org.eclipse.core.resources.*;
+import org.eclipse.core.resources.IContainer;
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.IDialogPage;
 import org.eclipse.jface.dialogs.IPageChangedListener;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.PageChangedEvent;
 import org.eclipse.jface.viewers.*;
-import org.eclipse.jface.wizard.IWizardPage;
-import org.eclipse.jface.wizard.Wizard;
-import org.eclipse.jface.wizard.WizardDialog;
-import org.eclipse.jface.wizard.WizardPage;
+import org.eclipse.jface.wizard.*;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Combo;
+import org.eclipse.swt.widgets.*;
 import org.eclipse.ui.*;
-import org.eclipse.ui.dialogs.*;
 import org.eclipse.ui.internal.browser.WebBrowserEditorInput;
-import org.eclipse.ui.internal.util.Util;
-import org.eclipse.ui.model.IWorkbenchAdapter;
 import org.eclipse.ui.model.WorkbenchContentProvider;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.osgi.framework.Bundle;
-import org.eclipse.jdt.core.IJavaElement;
-import org.eclipse.jdt.core.IJavaProject;
 import org.python.pydev.navigator.elements.IWrappedResource;
 
 /**
@@ -76,7 +71,6 @@ public class DigAction implements IViewActionDelegate, IWorkbenchWindowActionDel
 			labelProvider = WorkbenchLabelProvider.getDecoratingWorkbenchLabelProvider();
 		}
 
-		@Override
 		public void createControl(Composite parent) {
 			Composite composite = new Composite(parent, SWT.NONE);
 			GridLayout gl = new GridLayout();
@@ -91,13 +85,11 @@ public class DigAction implements IViewActionDelegate, IWorkbenchWindowActionDel
 			langCombo.addSelectionListener(new SelectionListener() 
 			{
 
-				@Override
 				public void widgetDefaultSelected(SelectionEvent e) {
 					if(resourcesTree != null)
 						resourcesTree.refresh();
 				}
  
-				@Override
 				public void widgetSelected(SelectionEvent e) {
 					if(resourcesTree != null)
 					{
@@ -150,7 +142,6 @@ public class DigAction implements IViewActionDelegate, IWorkbenchWindowActionDel
 			setControl(composite); 
 		}
 
-		@Override
 		public Object[] getChildren(Object parentElement) {
 			if(parentElement instanceof IContainer)
 				try {
@@ -161,14 +152,12 @@ public class DigAction implements IViewActionDelegate, IWorkbenchWindowActionDel
 			return new Object[0];
 		}
 
-		@Override
 		public Object getParent(Object element) {
 			if(element instanceof IResource)
 				((IResource)element).getParent();
 			return null;
 		}
 
-		@Override
 		public boolean hasChildren(Object element) {
 			if(element instanceof IContainer)
 				try {
@@ -179,7 +168,6 @@ public class DigAction implements IViewActionDelegate, IWorkbenchWindowActionDel
 			return false;
 		}
 
-		@Override
 		public Object[] getElements(Object inputElement) {
 			if(inputElement instanceof IContainer)
 				try {
@@ -190,38 +178,31 @@ public class DigAction implements IViewActionDelegate, IWorkbenchWindowActionDel
 			return new Object[0];
 		}
 
-		@Override
 		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 			// TODO Auto-generated method stub
 			
 		}
 
-		@Override
 		public Image getImage(Object element) {
 			return labelProvider.getImage(element);
 		}
 
-		@Override
 		public String getText(Object element) {
 			return labelProvider.getText(element);
 		}
 
-		@Override
 		public void addListener(ILabelProviderListener listener) {
 			labelProvider.addListener(listener);
 		}
 
-		@Override
 		public boolean isLabelProperty(Object element, String property) {
 			return labelProvider.isLabelProperty(element, property);
 		}
 
-		@Override
 		public void removeListener(ILabelProviderListener listener) {
 			labelProvider.removeListener(listener);
 		}
 
-		@Override
 		public void checkStateChanged(CheckStateChangedEvent event) {
 			boolean checked = event.getChecked();
 			IResource res = (IResource) event.getElement();
@@ -239,9 +220,9 @@ public class DigAction implements IViewActionDelegate, IWorkbenchWindowActionDel
 		public ConsolePage() {
 			super("ConsolePage");
 			setTitle("Running clonedigger");
+			setPageComplete(true);
 		}
 
-		@Override
 		public void createControl(Composite parent) {
 			Composite composite = new Composite(parent, SWT.NONE);
 			GridLayout gl = new GridLayout();
@@ -419,7 +400,6 @@ public class DigAction implements IViewActionDelegate, IWorkbenchWindowActionDel
 		//part = targetPart;		
 	}
 
-	@Override
 	public void pageChanged(PageChangedEvent event) {
 		IDialogPage page = (IDialogPage) event.getSelectedPage();
 		if(!(page instanceof ConsolePage))
@@ -508,7 +488,6 @@ public class DigAction implements IViewActionDelegate, IWorkbenchWindowActionDel
 		System.err.println("end");
 		
 		digThread = new Thread(new Runnable() {
-			@Override
 			public void run() {
 				final byte[] buf = new byte[1024];
 				InputStream pi = digProcess.getInputStream();
@@ -517,7 +496,6 @@ public class DigAction implements IViewActionDelegate, IWorkbenchWindowActionDel
 						final int len = pi.read(buf);
 						if(len < 0) break;
 						Display.getDefault().syncExec(new Runnable() {
-							@Override
 							public void run() {
 								consolePage.console.append(new String(buf, 0, len));
 							}});
@@ -525,7 +503,6 @@ public class DigAction implements IViewActionDelegate, IWorkbenchWindowActionDel
 						e.printStackTrace();
 					}			
 				Display.getDefault().syncExec(new Runnable() {
-					@Override
 					public void run() {
 						digProcess = null;
 						digThread = null;
@@ -539,7 +516,6 @@ public class DigAction implements IViewActionDelegate, IWorkbenchWindowActionDel
 		digThread.start();
 	}
 
-	@Override
 	public void init(IWorkbenchWindow window) {
 		
 	}
