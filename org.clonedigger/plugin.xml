@@ -5,48 +5,25 @@
          point="org.eclipse.ui.actionSets">
       <actionSet
             id="org.clonedigger.actionSet"
-            label="Sample Action Set"
+            label="Dig clones"
             visible="true">
          <menu
-               id="sampleMenu"
-               label="Sample &amp;Menu">
+               id="digMenu"
+               label="Dig clones">
             <separator
-                  name="sampleGroup">
+                  name="digGroup">
             </separator>
          </menu>
          <action
-               class="org.clonedigger.actions.SampleAction"
+               class="org.clonedigger.actions.DigAction"
                icon="icons/sample.gif"
-               id="org.clonedigger.actions.SampleAction"
-               label="&amp;Sample Action"
-               menubarPath="sampleMenu/sampleGroup"
-               toolbarPath="sampleGroup"
-               tooltip="Hello, Eclipse world">
+               id="org.clonedigger.actions.digAction"
+               label="Dig clones"
+               menubarPath="digMenu/digGroup"
+               toolbarPath="digGroup"
+               tooltip="Dig clones">
          </action>
       </actionSet>
-   </extension>
-   <extension
-         point="org.eclipse.ui.editorActions">
-      <editorContribution
-            id="org.clonedigger.editorContribution1"
-            targetID="org.python.pydev.editor.PythonEditor">
-         <menu
-               id="labelmenu1"
-               label="label">
-            <separator
-                  name="labelGroup">
-            </separator>
-         </menu>
-         <action
-               class="org.clonedigger.actions.LabelAction"
-               icon="icons/sample.gif"
-               id="org.clonedigger.LabelAction"
-               label="label"
-               menubarPath="labelmenu1/labelGroup"
-               toolbarPath="sampleGroup"
-               tooltip="Label Action">
-         </action>
-      </editorContribution>
    </extension>
    <extension
          point="org.eclipse.ui.editors">
@@ -54,46 +31,19 @@
             class="org.clonedigger.ResultBrowser"
             default="false"
             id="org.clonedigger.resultbrowser"
-            name="name">
+            name="resultbrowser">
       </editor>
-   </extension>
-   <extension
-         point="org.eclipse.ui.viewActions">
-      <viewerContribution
-            id="org.clonedigger.ProjectExplorerContribution"
-            targetID="org.eclipse.ui.navigator.ProjectExplorer">
-         <menu
-               id="org.clonedigger.resourceNavigatorMenu"
-               label="Clone Digger"
-               path="additions">
-            <separator
-                  name="resourceNavigatorSubMenu">
-            </separator>
-         </menu>
-         <action
-               class="org.clonedigger.actions.LabelAction"
-               enablesFor="1"
-               icon="icons/sample.gif"
-               id="org.clonedigger.ProjectExplorerAction"
-               label="Dig clones"
-               menubarPath="additions">
-            <selection
-                  class="org.eclipse.core.resources.IFile"
-                  name="*.py">
-            </selection>
-         </action>
-      </viewerContribution>
    </extension>
    <extension
          point="org.eclipse.ui.popupMenus">
       <objectContribution
-            id="org.clonedigger.contribution1"
-            objectClass="org.eclipse.core.resources.IFile">
+            id="org.clonedigger.projectContibution"
+            objectClass="java.lang.Object">
          <action
-               class="org.clonedigger.actions.LabelAction"
-               enablesFor="+"
-               id="org.clonedigger.newAction"
-               label="New Action"
+               class="org.clonedigger.actions.DigAction"
+               icon="icons/sample.gif"
+               id="org.clonedigger.projectAction"
+               label="Dig clones"
                menubarPath="additions">
          </action>
       </objectContribution>
