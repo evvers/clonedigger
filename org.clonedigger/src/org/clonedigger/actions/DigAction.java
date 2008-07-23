@@ -3,6 +3,7 @@ package org.clonedigger.actions;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -15,6 +16,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jface.action.IAction;
@@ -456,6 +458,17 @@ public class DigAction implements IViewActionDelegate, IWorkbenchWindowActionDel
 		htmFile = tempdir + "cde_output.htm";
 
 		Bundle bundle = Platform.getBundle("org.clonedigger");
+		
+		String runpath = "";
+		
+		try {
+			runpath = FileLocator.toFileURL(FileLocator.find(bundle, new Path("\\runclonedigger.py"), null)).toURI().getPath();
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		if(WINDOWS) runpath = runpath.substring(1);
 
 		(new java.io.File(htmFile)).delete();
 
@@ -468,7 +481,8 @@ public class DigAction implements IViewActionDelegate, IWorkbenchWindowActionDel
 				pb.command().add("cmd");
 				pb.command().add("/C");
 				pb.command().add(
-						"\"\"" + FileLocator.getBundleFile(bundle).getAbsolutePath() + "\\runclonedigger.py\" " +
+						"\"\"" + runpath + "\" " +
+						//"\"\"" + FileLocator.getBundleFile(bundle).getAbsolutePath() + "\\runclonedigger.py\" " +
 						ops +
 						"--output=\"" + htmFile + "\" " +
 						path +
@@ -480,7 +494,8 @@ public class DigAction implements IViewActionDelegate, IWorkbenchWindowActionDel
 				pb.command().add("sh");
 				pb.command().add("-c");
 				pb.command().add(
-						"python \"" + FileLocator.getBundleFile(bundle).getAbsolutePath() + "/runclonedigger.py\" " +
+						"python \"" + runpath + "\" " +
+						//"python \"" + FileLocator.getBundleFile(bundle).getAbsolutePath() + "/runclonedigger.py\" " +
 						ops +
 						"--output=\"" + htmFile + "\" " +
 						path +
