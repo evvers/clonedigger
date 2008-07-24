@@ -531,12 +531,17 @@ public class DigAction implements IViewActionDelegate, IWorkbenchWindowActionDel
 						} catch (IOException e) {
 							e.printStackTrace();
 						}
-					consolePage.console.append("\n");
+					
+						Display.getDefault().syncExec(new Runnable() {
+							public void run() {
+								consolePage.console.append("\n");
+							}});					
+					
 				} while(digProcess.exitValue() == 143);
 				Display.getDefault().syncExec(new Runnable() {
 					public void run() {
 						digProcess = null;
-						digThread = null;
+						digThread = null; 
 						if((new java.io.File(htmFile)).exists())
 						{
 							consolePage.console.append("Press finish to view results...");
