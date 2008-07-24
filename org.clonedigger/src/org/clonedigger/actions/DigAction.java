@@ -22,6 +22,7 @@ import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.IDialogPage;
 import org.eclipse.jface.dialogs.IPageChangedListener;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.PageChangedEvent;
 import org.eclipse.jface.viewers.*;
 import org.eclipse.jface.wizard.*;
@@ -50,9 +51,6 @@ import org.python.pydev.navigator.elements.IWrappedResource;
  */
 @SuppressWarnings("restriction")
 public class DigAction implements IViewActionDelegate, IWorkbenchWindowActionDelegate, IObjectActionDelegate, IPageChangedListener {
-	//private IEditorPart editor;
-	//private IViewPart view;
-	//private IWorkbenchPart part;
 	boolean WINDOWS = java.io.File.separatorChar == '\\';
 	Set<String> selectedFiles = new HashSet<String>();
 	Set<IResource> selectedResources = new HashSet<IResource>();
@@ -462,14 +460,12 @@ public class DigAction implements IViewActionDelegate, IWorkbenchWindowActionDel
 		String runpath = "";
 		
 		try {
-			runpath = FileLocator.toFileURL(FileLocator.find(bundle, new Path("\\runclonedigger.py"), null)).toURI().getPath();
-		} catch (URISyntaxException e) {
-			e.printStackTrace();
+			runpath = FileLocator.toFileURL(bundle.getEntry("runclonedigger.py")).getPath();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		System.err.println(runpath);
-		
+	
 		if(WINDOWS) runpath = runpath.substring(1);
 
 		(new java.io.File(htmFile)).delete();
