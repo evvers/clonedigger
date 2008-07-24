@@ -9,5 +9,8 @@
    <feature url="features/org.clonedigger.feature_1.0.22.jar" id="org.clonedigger.feature" version="1.0.22">
       <category name="Clone digger Eclipse plugin"/>
    </feature>
+   <feature url="features/org.clonedigger.feature_1.0.23.jar" id="org.clonedigger.feature" version="1.0.23">
+      <category name="Clone digger Eclipse plugin"/>
+   </feature>
    <category-def name="Clone digger Eclipse plugin" label="Clone digger Eclipse plugin"/>
 </site>

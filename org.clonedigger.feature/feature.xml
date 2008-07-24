@@ -2,7 +2,7 @@
 <feature
       id="org.clonedigger.feature"
       label="CloneDigger Feature"
-      version="1.0.22"
+      version="1.0.23"
       plugin="org.clonedigger">
 
    <description url="http://www.example.com/description">

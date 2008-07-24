@@ -515,27 +515,32 @@ public class DigAction implements IViewActionDelegate, IWorkbenchWindowActionDel
 					digProcess = null;
 					try {
 						digProcess = pb.start();
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					InputStream pi = digProcess.getInputStream();
-					while(true)
-						try {
+						InputStream pi = digProcess.getInputStream();
+						while(true)
+						{
+
 							final int len = pi.read(buf);
 							if(len < 0) break;
 							Display.getDefault().syncExec(new Runnable() {
 								public void run() {
 									consolePage.console.append(new String(buf, 0, len));
 								}});
-						} catch (IOException e) {
-							e.printStackTrace();
 						}
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+
+					Display.getDefault().syncExec(new Runnable() {
+						public void run() {
+							consolePage.console.append("\n");
+						}});
 					
-						Display.getDefault().syncExec(new Runnable() {
-							public void run() {
-								consolePage.console.append("\n");
-							}});					
+					//On *nix systems output console closing a moment before terminating process 
+					try {
+						digProcess.waitFor();
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
 					
 				} while(digProcess.exitValue() == 143);
 				Display.getDefault().syncExec(new Runnable() {
