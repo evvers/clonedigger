@@ -493,7 +493,9 @@ public class DigAction implements IViewActionDelegate, IWorkbenchWindowActionDel
 
 		pb.redirectErrorStream(true);
 		
-		String ppath = (new File(runpath)).getParent();
+		String ppath = (new File(runpath)).getParent() + "/CloneDigger";
+		
+		(new File(ppath)).mkdir();
 		 
 		pb.environment().put("PYTHONPATH", ppath);
 		
@@ -529,6 +531,7 @@ public class DigAction implements IViewActionDelegate, IWorkbenchWindowActionDel
 						} catch (IOException e) {
 							e.printStackTrace();
 						}
+					consolePage.console.append("\n");
 				} while(digProcess.exitValue() == 143);
 				Display.getDefault().syncExec(new Runnable() {
 					public void run() {
@@ -536,11 +539,11 @@ public class DigAction implements IViewActionDelegate, IWorkbenchWindowActionDel
 						digThread = null;
 						if((new java.io.File(htmFile)).exists())
 						{
-							consolePage.console.append("\nPress finish to view results...");
+							consolePage.console.append("Press finish to view results...");
 							consolePage.setPageComplete(true);
 						}
 						else
-							consolePage.console.append("\nNo output found, press finish to close this wizard...");
+							consolePage.console.append("No output found, press finish to close this wizard...");
 					}});				
 			}});
 		digThread.start();
