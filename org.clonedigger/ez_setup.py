@@ -67,7 +67,7 @@ def _validate_md5(egg_name, data):
 
 def use_setuptools(
     version=DEFAULT_VERSION, download_base=DEFAULT_URL, to_dir=os.curdir,
-    download_delay=15
+    download_delay=1
 ):
     """Automatically find/download setuptools and make it available on sys.path
 
