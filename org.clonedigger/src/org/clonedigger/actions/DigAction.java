@@ -496,6 +496,8 @@ public class DigAction implements IViewActionDelegate, IWorkbenchWindowActionDel
 		String ppath = (new File(runpath)).getParent();
 		 
 		pb.environment().put("PYTHONPATH", ppath);
+		
+		System.err.println(ppath);
 
 		System.err.println(pb.command().toString()); 
 		
@@ -505,7 +507,7 @@ public class DigAction implements IViewActionDelegate, IWorkbenchWindowActionDel
 		
 		digThread = new Thread(new Runnable() {
 			public void run() {
-				final byte[] buf = new byte[1024];
+				final byte[] buf = new byte[1024]; 
 				do
 				{
 					digProcess = null;
