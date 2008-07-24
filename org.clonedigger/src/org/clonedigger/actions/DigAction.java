@@ -3,27 +3,17 @@ package org.clonedigger.actions;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.*;
 import java.util.List;
-import java.util.Set;
 
-import org.eclipse.core.resources.IContainer;
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.resources.*;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.FileLocator;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jface.action.IAction;
-import org.eclipse.jface.dialogs.IDialogPage;
-import org.eclipse.jface.dialogs.IPageChangedListener;
-import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.dialogs.PageChangedEvent;
+import org.eclipse.jface.dialogs.*;
 import org.eclipse.jface.viewers.*;
 import org.eclipse.jface.wizard.*;
 import org.eclipse.swt.SWT;
@@ -58,6 +48,7 @@ public class DigAction implements IViewActionDelegate, IWorkbenchWindowActionDel
 	Process digProcess = null;
 	Thread digThread = null;
 	private String htmFile;
+	private ProcessBuilder pb;
 	
 	class ResourcesPage extends WizardPage implements ITreeContentProvider, ILabelProvider, ICheckStateListener
 	{
@@ -220,7 +211,7 @@ public class DigAction implements IViewActionDelegate, IWorkbenchWindowActionDel
 		public ConsolePage() {
 			super("ConsolePage");
 			setTitle("Running clonedigger");
-			setPageComplete(true);
+			setPageComplete(false);
 		}
 
 		public void createControl(Composite parent) {
@@ -470,7 +461,7 @@ public class DigAction implements IViewActionDelegate, IWorkbenchWindowActionDel
 
 		(new java.io.File(htmFile)).delete();
 
-		ProcessBuilder pb = new ProcessBuilder();
+		pb = new ProcessBuilder();
 
 		try {
 			if(WINDOWS)
@@ -505,8 +496,6 @@ public class DigAction implements IViewActionDelegate, IWorkbenchWindowActionDel
 			System.err.println(pb.command().toString());
 			
 			consolePage.console.append("Running clonedigger...\n\n");
-
-			digProcess = pb.start();
 			
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -517,25 +506,37 @@ public class DigAction implements IViewActionDelegate, IWorkbenchWindowActionDel
 		digThread = new Thread(new Runnable() {
 			public void run() {
 				final byte[] buf = new byte[1024];
-				InputStream pi = digProcess.getInputStream();
-				while(true)
+				do
+				{
+					digProcess = null;
 					try {
-						final int len = pi.read(buf);
-						if(len < 0) break;
-						Display.getDefault().syncExec(new Runnable() {
-							public void run() {
-								consolePage.console.append(new String(buf, 0, len));
-							}});
+						digProcess = pb.start();
 					} catch (IOException e) {
+						// TODO Auto-generated catch block
 						e.printStackTrace();
-					}			
+					}
+					InputStream pi = digProcess.getInputStream();
+					while(true)
+						try {
+							final int len = pi.read(buf);
+							if(len < 0) break;
+							Display.getDefault().syncExec(new Runnable() {
+								public void run() {
+									consolePage.console.append(new String(buf, 0, len));
+								}});
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+				} while(digProcess.exitValue() == 143);
 				Display.getDefault().syncExec(new Runnable() {
 					public void run() {
 						digProcess = null;
 						digThread = null;
-						consolePage.setPageComplete(true);
 						if((new java.io.File(htmFile)).exists())
+						{
 							consolePage.console.append("\nPress finish to view results...");
+							consolePage.setPageComplete(true);
+						}
 						else
 							consolePage.console.append("\nNo output found, press finish to close this wizard...");
 					}});				
