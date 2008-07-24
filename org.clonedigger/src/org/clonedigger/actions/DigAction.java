@@ -1,5 +1,6 @@
 package org.clonedigger.actions;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -491,6 +492,8 @@ public class DigAction implements IViewActionDelegate, IWorkbenchWindowActionDel
 		}
 
 		pb.redirectErrorStream(true);
+		 
+		pb.environment().put("PYTHONPATH", (new File(runpath)).getPath());
 
 		System.err.println(pb.command().toString());
 		
