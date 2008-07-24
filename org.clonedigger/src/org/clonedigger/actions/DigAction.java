@@ -463,43 +463,38 @@ public class DigAction implements IViewActionDelegate, IWorkbenchWindowActionDel
 
 		pb = new ProcessBuilder();
 
-		try {
-			if(WINDOWS)
-			{
-				//cmd /C ""command"  > nul 2>&1"
-				pb.command().add("cmd");
-				pb.command().add("/C");
-				pb.command().add(
-						"\"\"" + runpath + "\" " +
-						//"\"\"" + FileLocator.getBundleFile(bundle).getAbsolutePath() + "\\runclonedigger.py\" " +
-						ops +
-						"--output=\"" + htmFile + "\" " +
-						path +
-						" 2>&1 \"");
-			}
-			else
-			{
-				//sh -c python "..." "..." > /dev/null 2>&1
-				pb.command().add("sh");
-				pb.command().add("-c");
-				pb.command().add(
-						"python \"" + runpath + "\" " +
-						//"python \"" + FileLocator.getBundleFile(bundle).getAbsolutePath() + "/runclonedigger.py\" " +
-						ops +
-						"--output=\"" + htmFile + "\" " +
-						path +
-						" 2>&1 ");
-			}
-
-			pb.redirectErrorStream(true);
-
-			System.err.println(pb.command().toString());
-			
-			consolePage.console.append("Running clonedigger...\n\n");
-			
-		} catch (IOException e) {
-			e.printStackTrace();
+		if(WINDOWS)
+		{
+			//cmd /C ""command"  > nul 2>&1"
+			pb.command().add("cmd");
+			pb.command().add("/C");
+			pb.command().add(
+					"\"\"" + runpath + "\" " +
+					//"\"\"" + FileLocator.getBundleFile(bundle).getAbsolutePath() + "\\runclonedigger.py\" " +
+					ops +
+					"--output=\"" + htmFile + "\" " +
+					path +
+					" 2>&1 \"");
 		}
+		else
+		{
+			//sh -c python "..." "..." > /dev/null 2>&1
+			pb.command().add("sh");
+			pb.command().add("-c");
+			pb.command().add(
+					"python \"" + runpath + "\" " +
+					//"python \"" + FileLocator.getBundleFile(bundle).getAbsolutePath() + "/runclonedigger.py\" " +
+					ops +
+					"--output=\"" + htmFile + "\" " +
+					path +
+					" 2>&1 ");
+		}
+
+		pb.redirectErrorStream(true);
+
+		System.err.println(pb.command().toString());
+		
+		consolePage.console.append("Running clonedigger...\n\n");
 
 		System.err.println("end");
 		
