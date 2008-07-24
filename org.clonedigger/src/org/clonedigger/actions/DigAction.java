@@ -457,9 +457,9 @@ public class DigAction implements IViewActionDelegate, IWorkbenchWindowActionDel
 			e.printStackTrace();
 		}
 		System.err.println(runpath);
-	
+		
 		if(WINDOWS) runpath = runpath.substring(1);
-
+		
 		(new java.io.File(htmFile)).delete();
 
 		pb = new ProcessBuilder();
@@ -492,10 +492,12 @@ public class DigAction implements IViewActionDelegate, IWorkbenchWindowActionDel
 		}
 
 		pb.redirectErrorStream(true);
+		
+		String ppath = (new File(runpath)).getParent();
 		 
-		pb.environment().put("PYTHONPATH", (new File(runpath)).getPath());
+		pb.environment().put("PYTHONPATH", ppath);
 
-		System.err.println(pb.command().toString());
+		System.err.println(pb.command().toString()); 
 		
 		consolePage.console.append("Running clonedigger...\n\n");
 
