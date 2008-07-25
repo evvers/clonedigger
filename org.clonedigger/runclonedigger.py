@@ -3,8 +3,8 @@ import sys
 import os
 python_path = os.environ['PYTHONPATH']
 try:
-    import clonedigger.clonedigger
-    if not os.path.exists(python_path): raise ImportError  
+    if not os.path.exists(python_path): raise ImportError
+    import clonedigger.clonedigger  
 except ImportError:
 #    os.system('python ./setup.py easy_install --install-dir . clonedigger')
     if not os.path.exists(python_path): os.mkdir(python_path)
