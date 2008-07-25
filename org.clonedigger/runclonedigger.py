@@ -5,11 +5,10 @@ python_path = os.environ['PYTHONPATH']
 try:
     import clonedigger.clonedigger  
     if not os.path.abspath(clonedigger.clonedigger.__file__).startswith(os.path.abspath(python_path)):
-	raise ImportError
+        raise ImportError
 except ImportError:
     if not os.path.exists(python_path): 
         os.mkdir(python_path)
-        raise ImportError
     os.chdir(python_path)
     print 'Missing Clone Digger'
     print 'We will try now to install it to local directory', python_path
