@@ -9,7 +9,7 @@
             visible="true">
          <menu
                id="digMenu"
-               label="Dig clones">
+               label="Clone digger">
             <separator
                   name="digGroup">
             </separator>

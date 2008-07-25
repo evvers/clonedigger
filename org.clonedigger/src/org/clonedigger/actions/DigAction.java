@@ -434,6 +434,7 @@ public class DigAction implements IViewActionDelegate, IWorkbenchWindowActionDel
 		
 		for(String f: selectedFiles)
 		{
+			f = f.replaceAll("\\\\", "/"); //fix bug in browsersupport, which broke links with "\"
 			if(langidx == 0 && f.endsWith(".py")) path += "\"" + f + "\" ";
 			if(langidx == 1 && f.endsWith(".java")) path += "\"" + f + "\" ";
 		}
@@ -458,7 +459,7 @@ public class DigAction implements IViewActionDelegate, IWorkbenchWindowActionDel
 		}
 		System.err.println(runpath);
 		
-		if(WINDOWS) runpath = runpath.substring(1);
+		if(WINDOWS) runpath = runpath.replaceAll("^/+", "");
 		
 		(new java.io.File(htmFile)).delete();
 
@@ -495,7 +496,7 @@ public class DigAction implements IViewActionDelegate, IWorkbenchWindowActionDel
 		
 		String ppath = (new File(runpath)).getParent() + "/CloneDigger";
 		
-		(new File(ppath)).mkdir();
+		//(new File(ppath)).mkdir();
 		 
 		pb.environment().put("PYTHONPATH", ppath);
 		

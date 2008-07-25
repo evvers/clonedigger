@@ -33,22 +33,28 @@ public class ResultBrowser extends WebBrowserEditor {
 
 		public void changing(LocationEvent event) 
 		{
+			boolean WINDOWS = java.io.File.separatorChar == '\\';
 			if(event.location.startsWith("clone:"))
 			{
+				event.doit = false;
 				try
 				{ 
-					String [] args = event.location.split("clone:|\\?|&");
-
+					String [] args = event.location.split("clone://|\\?|&");
+					
+					args[1] = args[1].replaceAll("/+$", ""); //strange browsersupport behavior on links with "\" character
+					if(WINDOWS) args[1] = args[1].replaceAll("/", "\\\\");
+					
 					IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
 					
 					IFile file = ResourcesPlugin.getWorkspace().getRoot().
-						getFileForLocation(Path.fromOSString(args[1]));
+						getFileForLocation(Path.fromOSString(args[1])); //really strange eclipse behavior in windows
 					
 					IEditorInput editInput = null;
 					
 					if(file == null)
 					{
-						IFileStore fileStore = EFS.getLocalFileSystem().getStore(new URI("file:/" + args[1].replaceAll("^/+", "")));
+						IFileStore fileStore = EFS.getLocalFileSystem().getStore(
+								new URI("file:/" + args[1].replaceAll("^/+", "").replaceAll("\\\\", "/")));
 						editInput = new FileStoreEditorInput(fileStore);
 					}
 					else
@@ -71,8 +77,6 @@ public class ResultBrowser extends WebBrowserEditor {
 					catch (BadLocationException e) {
 						e.printStackTrace();
 					} 					
-
-					event.doit = false;
 				}
 				catch (PartInitException e) {
 					e.printStackTrace();
