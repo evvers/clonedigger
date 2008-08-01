@@ -1,8 +1,11 @@
 package org.clonedigger.actions;
 
+import java.awt.Font;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
@@ -50,12 +53,36 @@ public class DigAction implements IViewActionDelegate, IWorkbenchWindowActionDel
 	Thread digThread = null;
 	private String htmFile;
 	private ProcessBuilder pb;
+	private DigWizard digWizard;
+	
+	/**
+	 * The constructor
+	 */
+	public DigAction() {
+	}
+	
+	public void dispose() {
+	}
+	
+	public void init(IViewPart view) {
+		//this.view = view;
+	}
+
+	public void setActivePart(IAction action, IWorkbenchPart targetPart) {
+		//part = targetPart;		
+	}
+	
+	public void init(IWorkbenchWindow window) {
+	}
 	
 	class ResourcesPage extends WizardPage implements ITreeContentProvider, ILabelProvider, ICheckStateListener
 	{
 		private Combo langCombo;
 		private CheckboxTreeViewer resourcesTree;
 		private ILabelProvider labelProvider;
+		private Button fastMode;
+		private Spinner cloneSize;
+		private Spinner cloneDist;
 
 		public ResourcesPage() {
 			super("ResourcesPage");
@@ -66,14 +93,48 @@ public class DigAction implements IViewActionDelegate, IWorkbenchWindowActionDel
 		public void createControl(Composite parent) {
 			Composite composite = new Composite(parent, SWT.NONE);
 			GridLayout gl = new GridLayout();
-			int ncol = 1;
-			gl.numColumns = ncol;
+			GridData gd;
+			gl.numColumns = 2;
+			gl.horizontalSpacing = 12;
 			composite.setLayout(gl);
 			new Label(composite, SWT.NONE).setText("Select language:");					
+			
+			Group opsGroup = new Group(composite, SWT.BEGINNING);
+			opsGroup.setText("Dig options");
+			opsGroup.setLayout(new GridLayout(5, false));
+			
+			gd = new GridData(GridData.BEGINNING);
+			gd.verticalSpan = 2;
+			opsGroup.setLayoutData(gd);
+			
+			fastMode = new Button(opsGroup, SWT.CHECK);
+			fastMode.setText("Fast mode");
+			fastMode.setToolTipText(
+					"Find only clones, which differ in variable and function names and constants." +
+					"Use this option if you don't want to wait.");
+			Label label = new Label(opsGroup, SWT.NONE);
+			label.setText("  Clone size:");
+			label.setToolTipText("The minimum clone size (in lines of code)");
+			cloneSize = new Spinner(opsGroup, SWT.BORDER);
+			cloneSize.setMinimum(1);
+			cloneSize.setMaximum(99);
+			cloneSize.setTextLimit(2);
+			cloneSize.setToolTipText(label.getToolTipText());
+			label = new Label(opsGroup, SWT.NONE);
+			label.setText("  Clone distance:");
+			label.setToolTipText("The maximum amount of differences between fragments in clone pair");
+			cloneDist = new Spinner(opsGroup, SWT.BORDER);
+			cloneDist.setMinimum(1);
+			cloneDist.setMaximum(99);
+			cloneDist.setTextLimit(2);
+			cloneDist.setToolTipText(label.getToolTipText());
+			
 			langCombo = new Combo(composite, SWT.BORDER | SWT.READ_ONLY);
 			langCombo.add("Python");
 			langCombo.add("Java");
 			langCombo.select(0);
+			gd = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
+			langCombo.setLayoutData(gd);
 			langCombo.addSelectionListener(new SelectionListener() 
 			{
 
@@ -83,17 +144,29 @@ public class DigAction implements IViewActionDelegate, IWorkbenchWindowActionDel
 				}
  
 				public void widgetSelected(SelectionEvent e) {
-					if(resourcesTree != null)
-					{
+					if(resourcesTree != null) {
 						resourcesTree.refresh();
 						resourcesTree.setCheckedElements(selectedResources.toArray());
 						resourcesTree.setGrayedElements(grayedResources.toArray());
 					}
+					if(langCombo.getSelectionIndex() == 0) {
+						cloneSize.setSelection(5);
+						cloneDist.setSelection(5);
+					} else {
+						cloneSize.setSelection(10);
+						cloneDist.setSelection(7);
+					}
+						
 				}
 				
 			});
-			
-			new Label(composite, SWT.NONE).setText("Select files:");
+			langCombo.notifyListeners(SWT.Selection, new Event());
+									
+			label = new Label(composite, SWT.NONE);
+			label.setText("Select files:");
+			gd = new GridData(SWT.BEGINNING);
+			gd.horizontalSpan = 2;
+			label.setLayoutData(gd);
 			resourcesTree = new CheckboxTreeViewer(composite);
 			//resourcesTree.setLabelProvider(this);
 			//resourcesTree.setContentProvider(this);
@@ -126,7 +199,9 @@ public class DigAction implements IViewActionDelegate, IWorkbenchWindowActionDel
 			});
 			resourcesTree.addCheckStateListener(this);
 			resourcesTree.setInput(ResourcesPlugin.getWorkspace().getRoot());
-			resourcesTree.getControl().setLayoutData(new GridData(GridData.FILL_HORIZONTAL | GridData.FILL_VERTICAL));
+			gd = new GridData(GridData.FILL_HORIZONTAL | GridData.FILL_VERTICAL);
+			gd.horizontalSpan = 2;
+			resourcesTree.getControl().setLayoutData(gd);
 			resourcesTree.refresh();
 			resourcesTree.setCheckedElements(selectedResources.toArray());
 			resourcesTree.setGrayedElements(grayedResources.toArray());
@@ -171,8 +246,6 @@ public class DigAction implements IViewActionDelegate, IWorkbenchWindowActionDel
 		}
 
 		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-			// TODO Auto-generated method stub
-			
 		}
 
 		public Image getImage(Object element) {
@@ -228,6 +301,13 @@ public class DigAction implements IViewActionDelegate, IWorkbenchWindowActionDel
 			console.setLayoutData(new GridData(GridData.FILL_HORIZONTAL | GridData.FILL_VERTICAL));
 			console.setBackground(new Color(null, 0,0,0));
 			console.setForeground(new Color(null, 255,255,255));
+			/*try {
+				console.setFont(new org.eclipse.swt.graphics.Font(null, "Terminal", 14, 0));
+			} 
+			catch(Exception e)
+			{
+				e.printStackTrace();
+			}/**/
 						
 			setControl(composite);
 		}		
@@ -236,16 +316,16 @@ public class DigAction implements IViewActionDelegate, IWorkbenchWindowActionDel
 	
 	class DigWizard extends Wizard
 	{
+		private ResourcesPage resourcePage;
+		private ConsolePage consolePage;
 
-		@Override
 		public void addPages() {
 			super.addPages();
-			addPage(new ResourcesPage());
-			addPage(new ConsolePage());
+			addPage(resourcePage = new ResourcesPage());
+			addPage(consolePage = new ConsolePage());
 			setWindowTitle("Dig clones");
 		}
 
-		@Override
 		public boolean performFinish() {
 			if((new java.io.File(htmFile)).exists())
 				try {
@@ -268,14 +348,12 @@ public class DigAction implements IViewActionDelegate, IWorkbenchWindowActionDel
 			return true;
 		}
 		
-		@Override
 		public boolean performCancel() {
 			if(digProcess == null) return true;
 			digProcess.destroy();
 			try {
 				digProcess.waitFor();
 				digThread.interrupt();
-				//digThread.join();
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -286,41 +364,25 @@ public class DigAction implements IViewActionDelegate, IWorkbenchWindowActionDel
 	}
 	
 	/**
-	 * The constructor
-	 */
-	public DigAction() {
-	}
-
-	/**
 	 * The action has been activated. The argument of the
 	 * method represents the 'real' action sitting
 	 * in the workbench UI.
 	 * @see IWorkbenchWindowActionDelegate#run
 	 */
-	public void run(IAction action) {
-		//IEditorPart editor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
-		//editor.doSave(null);
-		
-		System.err.println("run");
+	public void run(IAction action) 
+	{
+		if(!PlatformUI.getWorkbench().saveAllEditors(true)) return;
 		
 		Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
-		
-		if(!PlatformUI.getWorkbench().saveAllEditors(true)) return;
-				
-		DigWizard digWizard = new DigWizard();
-		
-		System.err.println("Opening Wizard");
-		
+		digWizard = new DigWizard();
 		WizardDialog wd = new WizardDialog(shell, digWizard);
 		wd.addPageChangedListener(this);
 		wd.open();
-		
-		System.err.println("Wizard opened");
-		
 	}
 
 	public void selectResource(IResource res, boolean select)
 	{
+		if(res == null) return;
 		if(select && selectedResources.contains(res) && !grayedResources.contains(res)) return;
 		if(res instanceof IContainer)
 			try {
@@ -336,13 +398,14 @@ public class DigAction implements IViewActionDelegate, IWorkbenchWindowActionDel
 			else
 				selectedFiles.remove(res.getLocation().toOSString());
 		}
+		
 		if(select) 
 			selectedResources.add(res);
 		else
 			selectedResources.remove(res);
-		
 		grayedResources.remove(res);
-		if(res != null) res = res.getParent();
+		
+		res = res.getParent();
 		while(res != null)
 		{
 			selectedResources.add(res);
@@ -360,8 +423,6 @@ public class DigAction implements IViewActionDelegate, IWorkbenchWindowActionDel
 	 */
 	public void selectionChanged(IAction action, ISelection selection) 
 	{
-		System.err.println("selectionChanged");
-		
 		IStructuredSelection sel = (IStructuredSelection)selection;
 		selectedFiles.clear();
 		selectedResources.clear();
@@ -380,26 +441,9 @@ public class DigAction implements IViewActionDelegate, IWorkbenchWindowActionDel
 			}
 			if(obj instanceof IJavaElement) 
 				res = ((IJavaElement)obj).getResource();
-			if(res == null) 
-				action.setEnabled(false);
+			//if(res == null) action.setEnabled(false);
 			selectResource(res, true);
 		}
-	}
-
-	/**
-	 * We can use this method to dispose of any system
-	 * resources we previously allocated.
-	 * @see IWorkbenchWindowActionDelegate#dispose
-	 */
-	public void dispose() {
-	}
-	
-	public void init(IViewPart view) {
-		//this.view = view;
-	}
-
-	public void setActivePart(IAction action, IWorkbenchPart targetPart) {
-		//part = targetPart;		
 	}
 
 	public void pageChanged(PageChangedEvent event) {
@@ -421,17 +465,18 @@ public class DigAction implements IViewActionDelegate, IWorkbenchWindowActionDel
 			}
 			return;
 		}
-		int langidx = ((ResourcesPage) ((ConsolePage) page).getPreviousPage()).langCombo.getSelectionIndex();
+		int langidx = digWizard.resourcePage.langCombo.getSelectionIndex();
 		final ConsolePage consolePage = (ConsolePage) page;
 		consolePage.console.setText("");
 		consolePage.setPageComplete(false);
 		
+		String ops = " --links-for-eclipse";
+		if(langidx == 1) ops += " --lang=java";
+		if(digWizard.resourcePage.fastMode.getSelection()) ops += " --fast";
+		ops += " --size-threshold=" + digWizard.resourcePage.cloneSize.getSelection();
+		ops += " --distance-threshold=" + digWizard.resourcePage.cloneDist.getSelection(); 
+		
 		String path = "";
-		
-		String ops = "--links-for-eclipse ";
-		
-		if(langidx == 1) ops += "--lang=java ";
-		
 		for(String f: selectedFiles)
 		{
 			f = f.replaceAll("\\\\", "/"); //fix bug in browsersupport, which broke links with "\"
@@ -439,105 +484,89 @@ public class DigAction implements IViewActionDelegate, IWorkbenchWindowActionDel
 			if(langidx == 1 && f.endsWith(".java")) path += "\"" + f + "\" ";
 		}
 		
-		System.err.println(path);
-
-		String tempdir = System.getProperty("java.io.tmpdir");
-
-		if ( !(tempdir.endsWith("/") || tempdir.endsWith("\\")) )
-			tempdir = tempdir + System.getProperty("file.separator");
-
-		htmFile = tempdir + "cde_output.htm";
-
+		try {
+			File tmpfile = File.createTempFile("cde_output", ".htm");
+			htmFile = tmpfile.getAbsolutePath();
+			tmpfile.deleteOnExit();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
 		Bundle bundle = Platform.getBundle("org.clonedigger");
-		
 		String runpath = "";
-		
 		try {
 			runpath = FileLocator.toFileURL(bundle.getEntry("runclonedigger.py")).getPath();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		System.err.println(runpath);
-		
 		if(WINDOWS) runpath = runpath.replaceAll("^/+", "");
 		
-		(new java.io.File(htmFile)).delete();
-
 		pb = new ProcessBuilder();
-
 		if(WINDOWS)
 		{
-			//cmd /C ""command"  > nul 2>&1"
+			//cmd /C ""..." "..."  > 2>&1"
 			pb.command().add("cmd");
 			pb.command().add("/C");
 			pb.command().add(
 					"\"\"" + runpath + "\" " +
 					//"\"\"" + FileLocator.getBundleFile(bundle).getAbsolutePath() + "\\runclonedigger.py\" " +
 					ops +
-					"--output=\"" + htmFile + "\" " +
+					" --output=\"" + htmFile + "\" " +
 					path +
 					" 2>&1 \"");
 		}
 		else
 		{
-			//sh -c python "..." "..." > /dev/null 2>&1
+			//sh -c python "..." "..." > 2>&1
 			pb.command().add("sh");
 			pb.command().add("-c");
 			pb.command().add(
 					"python \"" + runpath + "\" " +
 					//"python \"" + FileLocator.getBundleFile(bundle).getAbsolutePath() + "/runclonedigger.py\" " +
 					ops +
-					"--output=\"" + htmFile + "\" " +
+					" --output=\"" + htmFile + "\" " +
 					path +
 					" 2>&1 ");
 		}
-
 		pb.redirectErrorStream(true);
-		
 		String ppath = (new File(runpath)).getParent() + "/CloneDigger";
-		
 		//(new File(ppath)).mkdir();
-		 
 		pb.environment().put("PYTHONPATH", ppath);
 		
-		System.err.println(ppath);
-
-		System.err.println(pb.command().toString()); 
+		System.out.println("pythonexec: " + pb.command().toString()); 
 		
 		consolePage.console.append("Running clonedigger...\n\n");
 
-		System.err.println("end");
-		
 		digThread = new Thread(new Runnable() {
 			public void run() {
-				final byte[] buf = new byte[1024]; 
+				final char[] buf = new char[1024]; 
 				do
 				{
 					digProcess = null;
 					try {
 						digProcess = pb.start();
-						InputStream pi = digProcess.getInputStream();
+						InputStreamReader pi = new InputStreamReader(digProcess.getInputStream());
+						
 						while(true)
 						{
-
 							final int len = pi.read(buf);
 							if(len < 0) break;
 							Display.getDefault().syncExec(new Runnable() {
 								public void run() {
-									consolePage.console.append(new String(buf, 0, len));
+									consolePage.console.append(new String(buf, 0, len));		
 								}});
 						}
 					} catch (IOException e) {
 						e.printStackTrace();
-					}
+					} 
 
 					Display.getDefault().syncExec(new Runnable() {
 						public void run() {
 							consolePage.console.append("\n");
 						}});
 					
-					//On *nix systems output console closing a moment before terminating process 
 					try {
+						//On *nix systems output console closing a moment before terminating process
 						digProcess.waitFor();
 					} catch (InterruptedException e) {
 						e.printStackTrace();
@@ -554,13 +583,9 @@ public class DigAction implements IViewActionDelegate, IWorkbenchWindowActionDel
 							consolePage.setPageComplete(true);
 						}
 						else
-							consolePage.console.append("No output found, press finish to close this wizard...");
+							consolePage.console.append("No output found...");
 					}});				
 			}});
 		digThread.start();
-	}
-
-	public void init(IWorkbenchWindow window) {
-		
 	}
 }
