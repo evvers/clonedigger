@@ -11,6 +11,7 @@ import java.net.URL;
 import java.util.*;
 import java.util.List;
 
+import org.clonedigger.Activator;
 import org.eclipse.core.resources.*;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.FileLocator;
@@ -185,11 +186,12 @@ public class DigAction implements IViewActionDelegate, IWorkbenchWindowActionDel
 	                    List<Object> results = new ArrayList<Object>();
 	                    for(Object member: members) {
 	                        if(member instanceof IFile) {
- 	                         	if(langCombo.getSelectionIndex() == 0 &&
-	                         			((IFile)member).getFileExtension().equals("py") ||
-	                         	   langCombo.getSelectionIndex() == 1 &&
-	                        			((IFile)member).getFileExtension().equals("java"))
- 	                        		results.add(member);
+	                        	if(((IFile)member).getFileExtension() != null)
+	                        		if(langCombo.getSelectionIndex() == 0 &&
+	                        				((IFile)member).getFileExtension().equals("py") ||
+	                        		   langCombo.getSelectionIndex() == 1 &&
+	                        				((IFile)member).getFileExtension().equals("java"))
+	                        			results.add(member);
 	                        } else results.add(member);
 	                    }
 	                    return results.toArray();
@@ -301,13 +303,6 @@ public class DigAction implements IViewActionDelegate, IWorkbenchWindowActionDel
 			console.setLayoutData(new GridData(GridData.FILL_HORIZONTAL | GridData.FILL_VERTICAL));
 			console.setBackground(new Color(null, 0,0,0));
 			console.setForeground(new Color(null, 255,255,255));
-			/*try {
-				console.setFont(new org.eclipse.swt.graphics.Font(null, "Terminal", 14, 0));
-			} 
-			catch(Exception e)
-			{
-				e.printStackTrace();
-			}/**/
 						
 			setControl(composite);
 		}		
@@ -349,16 +344,17 @@ public class DigAction implements IViewActionDelegate, IWorkbenchWindowActionDel
 		}
 		
 		public boolean performCancel() {
-			if(digProcess == null) return true;
-			digProcess.destroy();
-			try {
-				digProcess.waitFor();
-				digThread.interrupt();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
+			synchronized(Activator.getDefault()) 
+			{
+				if(digThread == null) return true;
+				if(digProcess != null)
+					try {
+						digProcess.destroy();
+						digProcess.waitFor();
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
 			}
-			digProcess = null;
-			digThread = null;
 			return true;
 		}
 	}
@@ -423,6 +419,7 @@ public class DigAction implements IViewActionDelegate, IWorkbenchWindowActionDel
 	 */
 	public void selectionChanged(IAction action, ISelection selection) 
 	{
+		if(!(selection instanceof IStructuredSelection)) return;
 		IStructuredSelection sel = (IStructuredSelection)selection;
 		selectedFiles.clear();
 		selectedResources.clear();
@@ -450,20 +447,18 @@ public class DigAction implements IViewActionDelegate, IWorkbenchWindowActionDel
 		IDialogPage page = (IDialogPage) event.getSelectedPage();
 		if(!(page instanceof ConsolePage))
 		{
-			if(digProcess != null)
+			synchronized(Activator.getDefault())
 			{
-				digProcess.destroy();
-				try {
-					digProcess.waitFor();
-					digThread.interrupt();
-					//digThread.join();
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-				digProcess = null;
-				digThread = null;
+				if(digThread == null) return;
+				if(digProcess != null)
+					try {
+						digProcess.destroy();
+						digProcess.waitFor();
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				return;
 			}
-			return;
 		}
 		int langidx = digWizard.resourcePage.langCombo.getSelectionIndex();
 		final ConsolePage consolePage = (ConsolePage) page;
@@ -537,55 +532,86 @@ public class DigAction implements IViewActionDelegate, IWorkbenchWindowActionDel
 		
 		consolePage.console.append("Running clonedigger...\n\n");
 
-		digThread = new Thread(new Runnable() {
-			public void run() {
-				final char[] buf = new char[1024]; 
-				do
-				{
-					digProcess = null;
-					try {
-						digProcess = pb.start();
-						InputStreamReader pi = new InputStreamReader(digProcess.getInputStream());
-						
-						while(true)
+		synchronized(Activator.getDefault())
+		{
+			digWizard.resourcePage.setPageComplete(false); //This prevents us from running two threads
+			// Why we shouldn't use digThread.join to wait for the thread? digThread use syncExec method and
+			// join operation in main thread cause digThread to deadlock, remember that Thread.stop is depricated 
+			
+			digThread = new Thread(new Runnable() {
+				public void run() {
+					try
+					{
+						final char[] buf = new char[1024]; 
+						do
 						{
-							final int len = pi.read(buf);
-							if(len < 0) break;
+							try {
+								InputStreamReader pi;
+								synchronized(Activator.getDefault())
+								{
+									digProcess = pb.start();
+									// TODO: support for oem local encoding... for windows use "chcp" command
+									pi = new InputStreamReader(digProcess.getInputStream());
+								}
+
+								while(true)
+								{
+									final int len = pi.read(buf);
+									if(len < 0) break;
+									Display.getDefault().syncExec(new Runnable() {
+										public void run() {
+											consolePage.console.append(new String(buf, 0, len));		
+										}});
+								}
+							} catch (IOException e) {
+								e.printStackTrace();
+							} 
+
 							Display.getDefault().syncExec(new Runnable() {
 								public void run() {
-									consolePage.console.append(new String(buf, 0, len));		
+									consolePage.console.append("\n");
 								}});
-						}
-					} catch (IOException e) {
-						e.printStackTrace();
-					} 
 
-					Display.getDefault().syncExec(new Runnable() {
-						public void run() {
-							consolePage.console.append("\n");
-						}});
-					
-					try {
-						//On *nix systems output console closing a moment before terminating process
-						digProcess.waitFor();
-					} catch (InterruptedException e) {
-						e.printStackTrace();
+							try {
+								//On *nix systems output console closing a moment before terminating process
+								digProcess.waitFor();
+							} catch (InterruptedException e) { 
+								e.printStackTrace();
+							}
+
+						} while(digProcess.exitValue() == 143);
+						Display.getDefault().syncExec(new Runnable() {
+							public void run() {
+								synchronized(Activator.getDefault())
+								{
+									digProcess = null;
+									digThread = null;
+									digWizard.resourcePage.setPageComplete(true); //Allow  to run other threads
+								}
+								if((new File(htmFile)).exists())
+								{
+									consolePage.console.append("Press finish to view results...");
+									consolePage.setPageComplete(true);
+								}
+								else
+									consolePage.console.append("No output found...");
+							}});
 					}
-					
-				} while(digProcess.exitValue() == 143);
-				Display.getDefault().syncExec(new Runnable() {
-					public void run() {
-						digProcess = null;
-						digThread = null; 
-						if((new java.io.File(htmFile)).exists())
+					catch(Throwable e) 
+					{ 
+						synchronized(Activator.getDefault())
 						{
-							consolePage.console.append("Press finish to view results...");
-							consolePage.setPageComplete(true);
+							digProcess = null;
+							digThread = null;
 						}
-						else
-							consolePage.console.append("No output found...");
-					}});				
-			}});
-		digThread.start();
+						Display.getDefault().syncExec(new Runnable() {
+							public void run() {
+								digWizard.resourcePage.setPageComplete(true); //Allow  to run other threads
+							}});
+						e.printStackTrace(); 
+					}
+				}});
+			digThread.start();
+		}
 	}
 }
