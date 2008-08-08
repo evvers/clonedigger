@@ -89,7 +89,7 @@ The semantics of threshold options is discussed in the paper "Duplicate code det
     cmdline.add_option('--report-unifiers', 
                        action='store_true', dest='report_unifiers',
                        help='')
- 
+    cmdline.add_option('--file-list', dest='file_list')
 
     cmdline.set_defaults(output='output.html',
                          language='python', 
@@ -107,7 +107,10 @@ The semantics of threshold options is discussed in the paper "Duplicate code det
     output_file_name = options.output
 
     for option in cmdline.option_list:
-        if option.dest is None:
+        if option.dest == 'file_list' and options.file_list != None:           
+            source_file_names.extend(open(options.file_list).read().split())
+            continue
+        elif option.dest is None:
             continue
         setattr(arguments, option.dest, getattr(options, option.dest))
 
