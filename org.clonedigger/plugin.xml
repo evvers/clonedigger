@@ -16,12 +16,20 @@
          </menu>
          <action
                class="org.clonedigger.actions.DigAction"
-               icon="icons/sample.gif"
+               icon="icons/icon.gif"
                id="org.clonedigger.actions.digAction"
                label="Dig clones"
                menubarPath="digMenu/digGroup"
                toolbarPath="digGroup"
                tooltip="Dig clones">
+         </action>
+         <action
+               class="org.clonedigger.actions.UpdateAction"
+               enablesFor="*"
+               id="org.clonedigger.actions.updateAction"
+               label="Update CloneDigger"
+               menubarPath="digMenu/digGroup"
+               tooltip="Update CloneDigger installation">
          </action>
       </actionSet>
    </extension>
@@ -41,7 +49,7 @@
             objectClass="java.lang.Object">
          <action
                class="org.clonedigger.actions.DigAction"
-               icon="icons/sample.gif"
+               icon="icons/icon.gif"
                id="org.clonedigger.projectAction"
                label="Dig clones"
                menubarPath="additions">

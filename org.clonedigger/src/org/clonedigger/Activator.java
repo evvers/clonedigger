@@ -1,5 +1,7 @@
 package org.clonedigger;
 
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
@@ -15,9 +17,6 @@ public class Activator extends AbstractUIPlugin {
 	// The shared instance
 	private static Activator plugin;
 	
-	/**
-	 * The constructor
-	 */
 	public Activator() {
 	}
 
@@ -47,6 +46,16 @@ public class Activator extends AbstractUIPlugin {
 	public static Activator getDefault() {
 		return plugin;
 	}
+	
+	public static void log(Throwable e) {
+		try {
+	        Status s = new Status(IStatus.ERROR, PLUGIN_ID, 
+	        		e.getMessage() != null ? e.getMessage() : "No message gotten.", e);
+	        getDefault().getLog().log(s);
+        } catch (Throwable e1) {
+            //logging should never fail!
+        }
+    }
 
 	/**
 	 * Returns an image descriptor for the image file at the given

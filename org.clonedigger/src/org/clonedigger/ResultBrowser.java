@@ -23,6 +23,10 @@ import org.eclipse.ui.internal.browser.WebBrowserEditor;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.texteditor.ITextEditor;
 
+/**
+ * Implementation of WebBrowser with support for "clone:" links. 
+ * Make a hook on location change event and navigate to editor.  
+ */
 @SuppressWarnings("restriction")
 public class ResultBrowser extends WebBrowserEditor {
 	
@@ -41,18 +45,21 @@ public class ResultBrowser extends WebBrowserEditor {
 				{ 
 					String [] args = event.location.split("clone://|\\?|&");
 					
-					args[1] = args[1].replaceAll("/+$", ""); //strange browsersupport behavior on links with "\" character
+					//patch on strange browsersupport behavior on links with "\" character
+					args[1] = args[1].replaceAll("/+$", "");
 					if(WINDOWS) args[1] = args[1].replaceAll("/", "\\\\");
 					
-					IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+					IWorkbenchPage page = PlatformUI.getWorkbench()
+					.getActiveWorkbenchWindow().getActivePage();
 					
 					IFile file = ResourcesPlugin.getWorkspace().getRoot().
-						getFileForLocation(Path.fromOSString(args[1])); //really strange eclipse behavior in windows
+						getFileForLocation(Path.fromOSString(args[1])); 
 					
 					IEditorInput editInput = null;
 					
 					if(file == null)
 					{
+						// Process external files, files that arent present in workspace for some reasons.
 						IFileStore fileStore = EFS.getLocalFileSystem().getStore(
 								new URI("file:/" + args[1].replaceAll("^/+", "").replaceAll("\\\\", "/")));
 						editInput = new FileStoreEditorInput(fileStore);
@@ -75,30 +82,19 @@ public class ResultBrowser extends WebBrowserEditor {
 						editor.setHighlightRange(start, end-start, true);
 					}
 					catch (BadLocationException e) {
-						e.printStackTrace();
+						Activator.log(e);
 					} 					
 				}
 				catch (PartInitException e) {
-					e.printStackTrace();
+					Activator.log(e);
 				} catch (URISyntaxException e) {
-					e.printStackTrace();
+					Activator.log(e);
 				}
 			}
-
-				/*
-				MessageDialog.openInformation(
-						null,
-						"CloneDigger Plug-in",
-						event.location.substring(0, 7)				
-					);
-				/**/
-
 		}
-		
 	}
 	
 	public ResultBrowser() {
-		// Auto-generated constructor stub
 	}
 
 	@Override

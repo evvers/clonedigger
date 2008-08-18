@@ -1,11 +1,10 @@
 package org.clonedigger.actions;
 
-import java.awt.Font;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
@@ -37,28 +36,23 @@ import org.osgi.framework.Bundle;
 import org.python.pydev.navigator.elements.IWrappedResource;
 
 /**
- * Our sample action implements workbench action delegate.
- * The action proxy will be created by the workbench and
- * shown in the UI. When the user tries to use the action,
- * this delegate will be created and execution will be 
- * delegated to it.
- * @see IWorkbenchWindowActionDelegate
+ * The main class of this plugin. Implementation of Dig Clones action.
+ * The wizard implemented as enclosed class. 
  */
 @SuppressWarnings("restriction")
-public class DigAction implements IViewActionDelegate, IWorkbenchWindowActionDelegate, IObjectActionDelegate, IPageChangedListener {
+public class DigAction implements 
+	IViewActionDelegate, IWorkbenchWindowActionDelegate, IObjectActionDelegate, IPageChangedListener 
+{
 	boolean WINDOWS = java.io.File.separatorChar == '\\';
-	Set<String> selectedFiles = new HashSet<String>();
-	Set<IResource> selectedResources = new HashSet<IResource>();
-	Set<IResource> grayedResources = new HashSet<IResource>();
+	Set<String> selectedFiles = new LinkedHashSet<String>();
+	Set<IResource> selectedResources = new LinkedHashSet<IResource>();
+	Set<IResource> grayedResources = new LinkedHashSet<IResource>();
 	Process digProcess = null;
 	Thread digThread = null;
 	private String htmFile;
 	private ProcessBuilder pb;
 	private DigWizard digWizard;
-	
-	/**
-	 * The constructor
-	 */
+		
 	public DigAction() {
 	}
 	
@@ -66,17 +60,16 @@ public class DigAction implements IViewActionDelegate, IWorkbenchWindowActionDel
 	}
 	
 	public void init(IViewPart view) {
-		//this.view = view;
 	}
 
-	public void setActivePart(IAction action, IWorkbenchPart targetPart) {
-		//part = targetPart;		
+	public void setActivePart(IAction action, IWorkbenchPart targetPart) { 
 	}
 	
 	public void init(IWorkbenchWindow window) {
 	}
 	
-	class ResourcesPage extends WizardPage implements ITreeContentProvider, ILabelProvider, ICheckStateListener
+	class ResourcesPage extends WizardPage implements 
+		ITreeContentProvider, ILabelProvider, ICheckStateListener
 	{
 		private Combo langCombo;
 		private CheckboxTreeViewer resourcesTree;
@@ -147,9 +140,9 @@ public class DigAction implements IViewActionDelegate, IWorkbenchWindowActionDel
 				public void widgetSelected(SelectionEvent e) {
 					if(resourcesTree != null) {
 						resourcesTree.refresh();
-						resourcesTree.setCheckedElements(selectedResources.toArray());
-						resourcesTree.setGrayedElements(grayedResources.toArray());
-					}
+						resourcesTree.setCheckedElements(filterValidItems(selectedResources));
+						resourcesTree.setGrayedElements(filterValidItems(grayedResources));
+					} 
 					if(langCombo.getSelectionIndex() == 0) {
 						cloneSize.setSelection(5);
 						cloneDist.setSelection(5);
@@ -169,6 +162,7 @@ public class DigAction implements IViewActionDelegate, IWorkbenchWindowActionDel
 			gd.horizontalSpan = 2;
 			label.setLayoutData(gd);
 			resourcesTree = new CheckboxTreeViewer(composite);
+			//TODO: make normal tree grayed representation through counting of childs
 			//resourcesTree.setLabelProvider(this);
 			//resourcesTree.setContentProvider(this);
 			resourcesTree.setLabelProvider(WorkbenchLabelProvider.getDecoratingWorkbenchLabelProvider());
@@ -205,8 +199,8 @@ public class DigAction implements IViewActionDelegate, IWorkbenchWindowActionDel
 			gd.horizontalSpan = 2;
 			resourcesTree.getControl().setLayoutData(gd);
 			resourcesTree.refresh();
-			resourcesTree.setCheckedElements(selectedResources.toArray());
-			resourcesTree.setGrayedElements(grayedResources.toArray());
+			resourcesTree.setCheckedElements(filterValidItems(selectedResources));
+			resourcesTree.setGrayedElements(filterValidItems(grayedResources));
 			
 			setControl(composite); 
 		}
@@ -216,7 +210,7 @@ public class DigAction implements IViewActionDelegate, IWorkbenchWindowActionDel
 				try {
 					return ((IContainer)parentElement).members();
 				} catch (CoreException e) {
-					e.printStackTrace();
+					Activator.log(e);
 				}
 			return new Object[0];
 		}
@@ -232,7 +226,7 @@ public class DigAction implements IViewActionDelegate, IWorkbenchWindowActionDel
 				try {
 					return ((IContainer)element).members().length > 0;
 				} catch (CoreException e) {
-					e.printStackTrace();
+					Activator.log(e);
 				}
 			return false;
 		}
@@ -242,7 +236,7 @@ public class DigAction implements IViewActionDelegate, IWorkbenchWindowActionDel
 				try {
 					return ((IContainer)inputElement).members();
 				} catch (CoreException e) {
-					e.printStackTrace();
+					Activator.log(e);
 				}
 			return new Object[0];
 		}
@@ -274,8 +268,29 @@ public class DigAction implements IViewActionDelegate, IWorkbenchWindowActionDel
 			boolean checked = event.getChecked();
 			IResource res = (IResource) event.getElement();
 			selectResource(res, checked); 
-			resourcesTree.setCheckedElements(selectedResources.toArray());
-			resourcesTree.setGrayedElements(grayedResources.toArray());
+			resourcesTree.setCheckedElements(filterValidItems(selectedResources));
+			resourcesTree.setGrayedElements(filterValidItems(grayedResources));
+		}
+		
+		/** 
+		 * This method is a speedup. 
+		 * When you trying to check or gray an absent element through setCheckedElements or 
+		 * setGrayedElements, you may introduce an undesirable delay.  
+		 */
+		public Object[] filterValidItems(Collection<IResource> src)
+		{
+			List<Object> results = new ArrayList<Object>();
+            for(Object member: src) {
+                if(member instanceof IFile) {
+                	if(((IFile)member).getFileExtension() != null)
+                		if(langCombo.getSelectionIndex() == 0 &&
+                				((IFile)member).getFileExtension().equals("py") ||
+                		   langCombo.getSelectionIndex() == 1 &&
+                				((IFile)member).getFileExtension().equals("java"))
+                			results.add(member);
+                } else results.add(member);
+            }
+            return results.toArray();
 		}
 		
 	}
@@ -297,8 +312,6 @@ public class DigAction implements IViewActionDelegate, IWorkbenchWindowActionDel
 			gl.numColumns = ncol;
 			composite.setLayout(gl);
 			
-			//new Label(composite, SWT.NONE).setText("Output console:");
-			
 			console = new Text(composite, SWT.READ_ONLY | SWT.WRAP | SWT.MULTI | SWT.BORDER | SWT.V_SCROLL);
 			console.setLayoutData(new GridData(GridData.FILL_HORIZONTAL | GridData.FILL_VERTICAL));
 			console.setBackground(new Color(null, 0,0,0));
@@ -311,8 +324,8 @@ public class DigAction implements IViewActionDelegate, IWorkbenchWindowActionDel
 	
 	class DigWizard extends Wizard
 	{
-		private ResourcesPage resourcePage;
-		private ConsolePage consolePage;
+		public ResourcesPage resourcePage;
+		public ConsolePage consolePage;
 
 		public void addPages() {
 			super.addPages();
@@ -325,10 +338,12 @@ public class DigAction implements IViewActionDelegate, IWorkbenchWindowActionDel
 			if((new java.io.File(htmFile)).exists())
 				try {
 
-					IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+					IWorkbenchPage page = PlatformUI.getWorkbench()
+						.getActiveWorkbenchWindow().getActivePage();
 
 					IEditorInput htmInput = null;
-					htmInput = new WebBrowserEditorInput(new URL("file:/" + htmFile.replaceAll("^/+", "")), 0);
+					htmInput = new WebBrowserEditorInput(
+							new URL("file:/" + htmFile.replaceAll("^/+", "")), 0);
 
 					//IEditorPart	htmEditor = (IEditorPart)
 					page.openEditor(htmInput,
@@ -336,9 +351,9 @@ public class DigAction implements IViewActionDelegate, IWorkbenchWindowActionDel
 						//"org.eclipse.ui.browser.editor");		
 
 				} catch (MalformedURLException e) {
-					e.printStackTrace();
+					Activator.log(e);
 				} catch (PartInitException e) {
-					e.printStackTrace();
+					Activator.log(e);
 				}
 			return true;
 		}
@@ -351,9 +366,11 @@ public class DigAction implements IViewActionDelegate, IWorkbenchWindowActionDel
 					try {
 						digProcess.destroy();
 						digProcess.waitFor();
+						
 					} catch (InterruptedException e) {
-						e.printStackTrace();
+						Activator.log(e);
 					}
+				digWizard = null;
 			}
 			return true;
 		}
@@ -375,7 +392,11 @@ public class DigAction implements IViewActionDelegate, IWorkbenchWindowActionDel
 		wd.addPageChangedListener(this);
 		wd.open();
 	}
-
+	
+	/**
+	 * Select or deselect resource. Fix selected resources 
+	 * and grayed resources according to new selection. 
+	 */
 	public void selectResource(IResource res, boolean select)
 	{
 		if(res == null) return;
@@ -385,7 +406,7 @@ public class DigAction implements IViewActionDelegate, IWorkbenchWindowActionDel
 				for(IResource subRes: ((IContainer)res).members())
 					selectResource(subRes, select);				
 			} catch (CoreException e) {
-				e.printStackTrace();
+				Activator.log(e);
 			}
 		else if(res instanceof IFile)
 		{
@@ -443,6 +464,10 @@ public class DigAction implements IViewActionDelegate, IWorkbenchWindowActionDel
 		}
 	}
 
+	/**
+	 * The handler of event from Wizard buttons next and back. 
+	 * Running CloneDigger process or terminate it immediately. 
+	 */
 	public void pageChanged(PageChangedEvent event) {
 		IDialogPage page = (IDialogPage) event.getSelectedPage();
 		if(!(page instanceof ConsolePage))
@@ -455,7 +480,7 @@ public class DigAction implements IViewActionDelegate, IWorkbenchWindowActionDel
 						digProcess.destroy();
 						digProcess.waitFor();
 					} catch (InterruptedException e) {
-						e.printStackTrace();
+						Activator.log(e);
 					}
 				return;
 			}
@@ -465,26 +490,28 @@ public class DigAction implements IViewActionDelegate, IWorkbenchWindowActionDel
 		consolePage.console.setText("");
 		consolePage.setPageComplete(false);
 		
-		String ops = " --links-for-eclipse";
-		if(langidx == 1) ops += " --lang=java";
-		if(digWizard.resourcePage.fastMode.getSelection()) ops += " --fast";
-		ops += " --size-threshold=" + digWizard.resourcePage.cloneSize.getSelection();
-		ops += " --distance-threshold=" + digWizard.resourcePage.cloneDist.getSelection(); 
-		
-		String path = "";
-		for(String f: selectedFiles)
-		{
-			f = f.replaceAll("\\\\", "/"); //fix bug in browsersupport, which broke links with "\"
-			if(langidx == 0 && f.endsWith(".py")) path += "\"" + f + "\" ";
-			if(langidx == 1 && f.endsWith(".java")) path += "\"" + f + "\" ";
-		}
-		
+		File flistFile = null;
 		try {
 			File tmpfile = File.createTempFile("cde_output", ".htm");
 			htmFile = tmpfile.getAbsolutePath();
 			tmpfile.deleteOnExit();
+			flistFile = File.createTempFile("cde_flist", ".lst");
+			flistFile.deleteOnExit();
 		} catch (IOException e) {
-			e.printStackTrace();
+			Activator.log(e);
+		}
+		BufferedWriter flistStream;
+		try {
+			flistStream = new BufferedWriter(new FileWriter(flistFile));
+			for(String f: selectedFiles)
+			{
+				f = f.replaceAll("\\\\", "/"); //fix bug in browsersupport, which broke links with "\"
+				if(langidx == 0 && f.endsWith(".py")) flistStream.write(f + "\n");
+				if(langidx == 1 && f.endsWith(".java")) flistStream.write(f + "\n");
+			}
+			flistStream.flush();
+		} catch (IOException e) {
+			Activator.log(e);
 		}
 		
 		Bundle bundle = Platform.getBundle("org.clonedigger");
@@ -492,22 +519,29 @@ public class DigAction implements IViewActionDelegate, IWorkbenchWindowActionDel
 		try {
 			runpath = FileLocator.toFileURL(bundle.getEntry("runclonedigger.py")).getPath();
 		} catch (IOException e) {
-			e.printStackTrace();
+			Activator.log(e);
 		}
 		if(WINDOWS) runpath = runpath.replaceAll("^/+", "");
 		
 		pb = new ProcessBuilder();
-		if(WINDOWS)
+		
+		/* The use of shell to run runclonedigger.py was abandoned cause java can't kill grandchild processes
+		 * in a case when we need to cancel our CloneDigger process.
+		 * (see bug 4770092 as an example)
+		 * http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4770092
+		 * 
+		 *if(WINDOWS)
 		{
 			//cmd /C ""..." "..."  > 2>&1"
 			pb.command().add("cmd");
 			pb.command().add("/C");
 			pb.command().add(
 					"\"\"" + runpath + "\" " +
-					//"\"\"" + FileLocator.getBundleFile(bundle).getAbsolutePath() + "\\runclonedigger.py\" " +
+					//"\"\"" + FileLocator.getBundleFile(bundle).getAbsolutePath() + 
+						"\\runclonedigger.py\" " +
 					ops +
 					" --output=\"" + htmFile + "\" " +
-					path +
+					" --file-list=\"" + flistFile.getAbsolutePath() + "\" " +
 					" 2>&1 \"");
 		}
 		else
@@ -517,15 +551,27 @@ public class DigAction implements IViewActionDelegate, IWorkbenchWindowActionDel
 			pb.command().add("-c");
 			pb.command().add(
 					"python \"" + runpath + "\" " +
-					//"python \"" + FileLocator.getBundleFile(bundle).getAbsolutePath() + "/runclonedigger.py\" " +
+					//"python \"" + FileLocator.getBundleFile(bundle).getAbsolutePath() + 
+						"/runclonedigger.py\" " +
 					ops +
 					" --output=\"" + htmFile + "\" " +
-					path +
+					" --file-list=\"" + flistFile.getAbsolutePath() + "\" " +
 					" 2>&1 ");
-		}
+		}*/
+		
+		pb.command().add("python");
+		pb.command().add(runpath);
+		pb.command().add("--links-for-eclipse");
+		if(langidx == 1) 
+			pb.command().add("--lang=java");
+		if(digWizard.resourcePage.fastMode.getSelection()) 
+			pb.command().add("--fast");
+		pb.command().add("--size-threshold=" + digWizard.resourcePage.cloneSize.getSelection());
+		pb.command().add("--distance-threshold=" + digWizard.resourcePage.cloneDist.getSelection()); 
+		pb.command().add("--output=\"" + htmFile + "\"");
+		pb.command().add("--file-list=\"" + flistFile.getAbsolutePath() + "\"");
 		pb.redirectErrorStream(true);
 		String ppath = (new File(runpath)).getParent() + "/CloneDigger";
-		//(new File(ppath)).mkdir();
 		pb.environment().put("PYTHONPATH", ppath);
 		
 		System.out.println("pythonexec: " + pb.command().toString()); 
@@ -534,9 +580,10 @@ public class DigAction implements IViewActionDelegate, IWorkbenchWindowActionDel
 
 		synchronized(Activator.getDefault())
 		{
-			digWizard.resourcePage.setPageComplete(false); //This prevents us from running two threads
-			// Why we shouldn't use digThread.join to wait for the thread? digThread use syncExec method and
-			// join operation in main thread cause digThread to deadlock, remember that Thread.stop is depricated 
+			digWizard.resourcePage.setPageComplete(false); // This prevents us from running two 
+			// threads. Why we shouldn't use digThread.join to wait for the thread? 
+			// digThread use syncExec method and join operation in main thread cause 
+			// digThread to deadlock, remember that Thread.stop is depricated 
 			
 			digThread = new Thread(new Runnable() {
 				public void run() {
@@ -550,8 +597,9 @@ public class DigAction implements IViewActionDelegate, IWorkbenchWindowActionDel
 								synchronized(Activator.getDefault())
 								{
 									digProcess = pb.start();
-									// TODO: support for oem local encoding... for windows use "chcp" command
-									pi = new InputStreamReader(digProcess.getInputStream());
+									// TODO: support for oem local encoding... on windows use "chcp" command
+									// for now support only for cyrillic encoding CP866
+									pi = new InputStreamReader(digProcess.getInputStream(), "CP866");
 								}
 
 								while(true)
@@ -560,23 +608,25 @@ public class DigAction implements IViewActionDelegate, IWorkbenchWindowActionDel
 									if(len < 0) break;
 									Display.getDefault().syncExec(new Runnable() {
 										public void run() {
-											consolePage.console.append(new String(buf, 0, len));		
+											if(digWizard != null)
+												consolePage.console.append(new String(buf, 0, len));		
 										}});
 								}
 							} catch (IOException e) {
-								e.printStackTrace();
+								Activator.log(e);
 							} 
 
 							Display.getDefault().syncExec(new Runnable() {
 								public void run() {
-									consolePage.console.append("\n");
+									if(digWizard != null)
+										consolePage.console.append("\n");
 								}});
 
 							try {
 								//On *nix systems output console closing a moment before terminating process
 								digProcess.waitFor();
 							} catch (InterruptedException e) { 
-								e.printStackTrace();
+								Activator.log(e);
 							}
 
 						} while(digProcess.exitValue() == 143);
@@ -584,31 +634,37 @@ public class DigAction implements IViewActionDelegate, IWorkbenchWindowActionDel
 							public void run() {
 								synchronized(Activator.getDefault())
 								{
+									//Allow  to run other threads
+									if(digWizard != null)
+									{
+										digWizard.resourcePage.setPageComplete(true);
+										if((new File(htmFile)).exists() && (new File(htmFile)).length() != 0) 
+										{
+											consolePage.console.append("Press finish to view results...");
+											consolePage.setPageComplete(true);
+										}
+										else
+											consolePage.console.append("No output found...");
+									}
 									digProcess = null;
-									digThread = null;
-									digWizard.resourcePage.setPageComplete(true); //Allow  to run other threads
+									digThread = null; 
 								}
-								if((new File(htmFile)).exists())
-								{
-									consolePage.console.append("Press finish to view results...");
-									consolePage.setPageComplete(true);
-								}
-								else
-									consolePage.console.append("No output found...");
 							}});
 					}
 					catch(Throwable e) 
 					{ 
 						synchronized(Activator.getDefault())
 						{
+							Display.getDefault().syncExec(new Runnable() {
+								public void run() {
+									//Allow  to run other threads
+									if(digWizard != null)
+										digWizard.resourcePage.setPageComplete(true); 
+								}});
 							digProcess = null;
 							digThread = null;
 						}
-						Display.getDefault().syncExec(new Runnable() {
-							public void run() {
-								digWizard.resourcePage.setPageComplete(true); //Allow  to run other threads
-							}});
-						e.printStackTrace(); 
+						Activator.log(e); 
 					}
 				}});
 			digThread.start();
