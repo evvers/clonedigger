@@ -48,6 +48,7 @@ def findDuplicateCode(source_files, report):
 	    for sequence in sequences_without_restriction:
 		if len(sequence) > 1000:
 		    first_statement = sequence[0]
+		    print
 		    print '-----------------------------------------'
 		    print 'Warning: sequences of statements, consists of %d elements is too long.' %(len(sequence),)
 		    print 'It starts at %s:%d.'%(first_statement.getSourceFile().getFileName(), min(first_statement.getLineNumbers()))
@@ -145,6 +146,7 @@ def findDuplicateCode(source_files, report):
 		else:
 		    length += 1
 		    if length>10:
+			print
 			print '-----------------------------------------'
 			print 'Warning: sequence of statements starting at %s:%d'%(first_statement.getSourceFile().getFileName(), min(first_statement.getLineNumbers()))
 			print 'consists of many similar statements.'

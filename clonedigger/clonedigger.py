@@ -21,16 +21,16 @@ import sys
 if __name__ == '__main__':
     sys.modules['clonedigger.logilab'] = __import__('logilab')
 
-    import re
-    import os
-    import traceback
-    from optparse import OptionParser
-    from fnmatch import fnmatch
+import re
+import os
+import traceback
+from optparse import OptionParser
+from fnmatch import fnmatch
 
-    import ast_suppliers
-    import clone_detection_algorithm
-    import arguments 
-    import html_report
+import ast_suppliers
+import clone_detection_algorithm
+import arguments 
+import html_report
 
 def main():
     cmdline = OptionParser(usage="""To run Clone Digger type:
