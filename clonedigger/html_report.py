@@ -45,7 +45,7 @@ class Report:
 	    return cmp(b.getMaxCoveredLineNumbersCount(), a.getMaxCoveredLineNumbersCount())
 	self._clones.sort(f)
     def startTimer(self, descr):
-	self._timers.append([descr, time.time()])
+	self._timers.append([descr, time.time(), time.ctime()])
 	sys.stdout.flush()
     def stopTimer(self, descr=''):	
 	self._timers[-1][1] = time.time() - self._timers[-1][1]
@@ -204,9 +204,12 @@ clusterize_using_dcup = %s<BR>
 </P> 
 	""" % (len(self._file_names), ', <BR>'.join(self._file_names), len(self._clones), self.covered_source_lines_count, self.all_source_lines_count, (not self.all_source_lines_count and 100) or 100*self.covered_source_lines_count/float(self.all_source_lines_count), arguments.clustering_threshold, arguments.distance_threshold, arguments.size_threshold, arguments.hashing_depth, str(arguments.clusterize_using_hash), str(arguments.clusterize_using_dcup))
 	if arguments.print_time:
-	    timings = '<B>Time elapsed</B><BR>'
-	    timings+= '<BR>\n'.join(['%s : %.2f seconds'%(i[0], i[1]) for i in self._timers])
+	    timings = ''
+	    timings += '<B>Time elapsed</B><BR>'
+	    timings += '<BR>\n'.join(['%s : %.2f seconds'%(i[0], i[1]) for i in self._timers])
 	    timings += '<BR>\n Total time: %.2f' % (self.getTotalTime())
+	    timings += '<BR>\n Started at: ' + self._timers[0][2]
+	    timings += '<BR>\n Finished at: ' + self._timers[-1][2]
 	else:
 	    timings = ''
 	
