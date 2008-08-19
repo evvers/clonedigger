@@ -492,10 +492,10 @@ public class DigAction implements
 		
 		File flistFile = null;
 		try {
-			File tmpfile = File.createTempFile("cde output", ".htm");
+			File tmpfile = File.createTempFile("cde_output", ".htm");
 			htmFile = tmpfile.getAbsolutePath();
 			tmpfile.deleteOnExit();
-			flistFile = File.createTempFile("cde flist", ".lst");
+			flistFile = File.createTempFile("cde_flist", ".lst");
 			flistFile.deleteOnExit();
 		} catch (IOException e) {
 			Activator.log(e);
