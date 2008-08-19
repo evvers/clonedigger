@@ -295,7 +295,7 @@ class ASTNGBuilder:
         """
         self.visit_default(node)
         node.instance_attrs = {}
-        node.basenames = [b_node.as_string() for b_node in node.bases]
+        node.basenames = [b_node for b_node in node.bases]
         self._push(node)
         for name, value in ( ('__name__', node.name),
                              ('__module__', node.root().name),

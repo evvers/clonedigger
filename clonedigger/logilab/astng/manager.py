@@ -105,7 +105,7 @@ class ASTNGManager(OptionsProviderMixIn):
         except KeyError:
             if source:
                 try:
-                    from clonedigger.logilab.astng.builder import ASTNGBuilder
+		    from clonedigger.logilab.astng.builder import ASTNGBuilder
                     astng = ASTNGBuilder(self).file_build(filepath, modname)
                 except SyntaxError:
                     raise

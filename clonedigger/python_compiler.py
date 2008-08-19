@@ -30,6 +30,8 @@ class PythonNodeLeaf:
 	return self._val
     def as_string(self):
 	return str(self.getVal())
+    def __str__(self):
+	return self.as_string()
 
 class PythonCompilerSourceFile (SourceFile):
     extension = 'py'
@@ -61,13 +63,14 @@ class PythonCompilerSourceFile (SourceFile):
 		    r.addChild(t)		    
 	    def add_leaf_child(child, name):
 		assert(not (type(child) == type([])))
-		assert(not isinstance(child, compiler.ast.Node))		
+		assert(not isinstance(child, compiler.ast.Node))				
 		t = AbstractSyntaxTree(repr(child))
 		t.setParent(r)
 		l = PythonNodeLeaf(child)
 		t.ast_node = l 
 		r.addChild(t)		    
 		setattr(r.ast_node, name, l)
+		return t
 	    def add_leaf_childs(childs, name):
 		assert(type(childs) == type([]) or type(childs) == type((0,)))
 		a = getattr(r.ast_node, name)
@@ -115,18 +118,19 @@ class PythonCompilerSourceFile (SourceFile):
 		    add_childs([compiler_ast_node.expr])
 		elif name == "Class":
 		    add_leaf_child(compiler_ast_node.name, 'name')
+#		    print '>>>>>>>>>>>>>>>>>>>>', flatten(compiler_ast_node.bases)
 		    add_childs(flatten(compiler_ast_node.bases)) 
 #		    add_leaf_child(compiler_ast_node.doc, 'doc') we don't want class docs in our tree, do we?
 		    add_childs([compiler_ast_node.code])
-#		elif name == "Compare":
-#		    TODO - uncomment and fix this code (very )
-#		    add_childs([compiler_ast_node.expr])
-#		    for op, expr in compiler_ast_node.ops:
-#			t = AbstractSyntaxTree(op)			
-#			t.addChild(rec_build_tree(expr, false))
-#			r.addChild(t)
+		elif name == "Compare":
+		    add_childs([compiler_ast_node.expr])
+		    for i in range(len(compiler_ast_node.ops)):
+			(op, expr) = compiler_ast_node.ops[i]
+			t = add_leaf_child(op, 'op')
+			add_childs([expr])
+			compiler_ast_node.ops[i] = (t.ast_node, expr)
 		elif name == "Const":
-		    add_leaf_child(compiler_ast_node.value, "value")
+		    add_leaf_child(repr(compiler_ast_node.value), "value")
 #		elif name == "From":
 #		    add_leaf_child(compiler_ast_node.modname, "modname")
 #		    add_childs(compiler_ast_node.names)
@@ -134,24 +138,27 @@ class PythonCompilerSourceFile (SourceFile):
 #		    add_childs(compiler_ast_node.decorators)  FIXME do we need that?
 		    add_leaf_child(compiler_ast_node.name, "name")
 		    add_leaf_childs(compiler_ast_node.argnames, "argnames")
-#		    add_childs(compiler_ast_node.defaults) TODO incomment and fix
+		    if compiler_ast_node.defaults == ():
+			compiler_ast_node.defaults = []
+		    add_childs(compiler_ast_node.defaults) #TODO incomment and fix
 		    add_leaf_string_childs([compiler_ast_node.flags])
 #		    add_leaf_child(compiler_ast_node.doc, "doc") same as class docs... we don't need them
 		    add_childs([compiler_ast_node.code])
 		elif name == "Getattr":
 		    add_childs([compiler_ast_node.expr])
 		    add_leaf_child(compiler_ast_node.attrname, "attrname")
-#		elif name == "Global":
-#		    add_leaf_childs(compiler_ast_node.names, "names")
+		elif name == "Global":
+		    add_leaf_childs(compiler_ast_node.names, "names")
 #		elif name == "Import":
 #		    add_leaf_childs(compiler_ast_node.names, "names")
 		elif name == "Keyword":
 		    add_leaf_child(compiler_ast_node.name, "name")
 		    add_childs([compiler_ast_node.expr])
-#		elif name == "Lambda": 
+		elif name == "Lambda": 
 #		    TODO: uncomment and fix
-#		    add_leaf_child(compiler_ast_node.names, "name")
-#		    add_childs(compiler_ast_node.expr)
+		    add_leaf_childs(compiler_ast_node.argnames, "argnames")
+		    add_childs(compiler_ast_node.defaults)		
+		    add_childs([compiler_ast_node.code])
 		elif name == "Name":
 		    # the most important one :)
 		    add_leaf_child(compiler_ast_node.name, "name")

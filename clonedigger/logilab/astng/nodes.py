@@ -454,7 +454,7 @@ Class.as_string = class_as_string
 
 def compare_as_string(node):
     """return an ast.Compare node as string"""
-    rhs_str = ' '.join(['%s %s' % (op, expr.as_string())
+    rhs_str = ' '.join(['%s %s' % (op.as_string(), expr.as_string())
                         for op, expr in node.ops])
     return '%s %s' % (node.expr.as_string(), rhs_str)
 Compare.as_string = compare_as_string
@@ -564,7 +564,7 @@ Getattr.as_string = getattr_as_string
 
 def global_as_string(node):
     """return an ast.Global node as string"""
-    return 'global %s' % ', '.join(node.names)
+    return 'global %s' % ', '.join([name.as_string() for name in node.names])
 Global.as_string = global_as_string
 
 def if_as_string(node):

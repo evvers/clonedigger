@@ -4,6 +4,6 @@ clusterize_using_dcup = False
 report_unifiers = False
 print_time = True
 force = False  
-use_diff = True 
+use_diff = False 
 clusterize_using_hash = False
 links_for_eclipse = False

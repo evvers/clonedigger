@@ -42,6 +42,20 @@ class Substitution:
 	if initial_value == None:
 	    initial_value = {}
 	self._map = initial_value
+    def substitute(self, tree, without_copying=False):	
+	if tree in self._map.keys():
+	    return self._map[tree]
+	else:
+	    if isinstance(tree, FreeVariable):
+		return tree 
+	    if without_copying:
+		return tree
+	    else:
+		r = AbstractSyntaxTree(tree.getName())
+		for child in tree.getChilds():
+		    r.addChild(self.substitute(child, without_copying))
+		return r
+
     def getMap(self):
 	return self._map
     def getSize(self):
@@ -51,18 +65,7 @@ class Substitution:
 	return ret
 
 class Unifier:
-    def __init__(self, t1, t2):
-	def substitute(tree, s):	
-	    if tree in s.keys():
-		return s[tree]
-	    else:
-		if isinstance(tree, FreeVariable):
-		    return tree 
-		r = AbstractSyntaxTree(tree.getName())
-		for child in tree.getChilds():
-		    r.addChild(substitute(child, s))
-		return r
-	
+    def __init__(self, t1, t2, ignore_parametrization=False):
 	def combineSubs(node, s, t):
 	    # s and t are 2-tuples
 	    assert(s[0].getMap().keys() == s[1].getMap().keys())
@@ -70,16 +73,17 @@ class Unifier:
 	    newt = (copy.copy(t[0]), copy.copy(t[1]))
 	    relabel = {}
 	    for si in s[0].getMap().keys():
-		foundone = False
-		for ti in t[0].getMap().keys():
-		    if (s[0].getMap()[si] == t[0].getMap()[ti]) and (s[1].getMap()[si] == t[1].getMap()[ti]): 
-			relabel[si] = ti
-			foundone = True
-			break
-		if not foundone:
+		if not ignore_parametrization:
+		    foundone = False
+		    for ti in t[0].getMap().keys():
+			if (s[0].getMap()[si] == t[0].getMap()[ti]) and (s[1].getMap()[si] == t[1].getMap()[ti]): 
+			    relabel[si] = ti
+			    foundone = True
+			    break
+		if ignore_parametrization or not foundone:
 		    newt[0].getMap()[si] = s[0].getMap()[si]
 		    newt[1].getMap()[si] = s[1].getMap()[si]
-	    return (substitute(node, relabel), newt)
+	    return (Substitution(relabel).substitute(node), newt)
 	def unify(node1, node2):
 	    if node1 == node2:
 		return (node1, (Substitution(), Substitution()))
