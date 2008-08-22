@@ -62,6 +62,8 @@ class HTMLReport(Report):
 	self._mark_to_statement_hash = mark_to_statement_hash
     def writeReport(self, file_name):
 # TODO REWRITE! This function code was created in a hurry
+	eclipse_start = '\n<!--ECLIPSE START-->'
+	eclipse_end   = '\n<!--ECLIPSE END-->'
 	def format_line_code(s):
 	    s = s.replace('\t', ' ')
 	    s = s.replace(' ', '&nbsp; ')
@@ -79,13 +81,14 @@ class HTMLReport(Report):
 	    s+= 'Distance between two fragments = %d <BR>' %(clone.calcDistance())
 	    s+= 'Clone size = ' + str(max([len(set(clone[i].getCoveredLineNumbers())) for i in [0,1]] ))
 	    s+= '<TABLE NOWRAP WIDTH=100% BORDER=1>'
-	    if arguments.links_for_eclipse:
-		s+= '<TR>'
-		for j in [0,1]:
-		    s+= '<TD> <a href="clone://%s?%d&%d"> Go to this fragment in Eclipse </a> </TD>'%(clone[j].getSourceFile().getFileName(), min(clone[j][0].getCoveredLineNumbers()), max(clone[j][-1].getCoveredLineNumbers()))
-		    if j==0:
-			s += '<TD></TD>'
-		s+= '</TR>'
+	    s+= eclipse_start
+	    s+= '<TR>'
+	    for j in [0,1]:
+		s+= '<TD> <a href="clone://%s?%d&%d"> Go to this fragment in Eclipse </a> </TD>'%(clone[j].getSourceFile().getFileName(), min(clone[j][0].getCoveredLineNumbers()), max(clone[j][-1].getCoveredLineNumbers()))
+		if j==0:
+		    s += '<TD></TD>'
+	    s+= '</TR>'
+	    s+= eclipse_end
 	    for j in [0,1]:
 		s+= '<TD>'
 		s+= 'Source file "%s"<BR>' %(clone[j].getSourceFile().getFileName(),)
@@ -231,6 +234,7 @@ clusterize_using_dcup = %s<BR>
 	warnings = ''
 	if arguments.use_diff:
 	    warnings += '<P>(*) Warning: the highlighting of differences is based on diff and doesn\'t reflect the tree-based clone detection algorithm.</P>'
+	save_to = eclipse_start + '<b><a href="file://%s">Save this report</a></b>'%(file_name,) +eclipse_end 	
 	HTML_code = """
 <HTML>
     <HEAD>
@@ -281,10 +285,15 @@ clusterize_using_dcup = %s<BR>
     %s
     %s
     %s
+    %s
     <HR>
     Clone Digger is aimed to find software clones in Python and Java programs. It is provided under the GPL license and can be downloaded from the site <a href="http://clonedigger.sourceforge.net">http://clonedigger.sourceforge.net</a>
     </BODY>
-</HTML>""" % (errors_info, descr, timings, '<BR>\n'.join(clone_descriptions), marks_report, warnings)
+</HTML>""" % (errors_info, save_to, descr, timings, '<BR>\n'.join(clone_descriptions), marks_report, warnings)
 	f = open(file_name, 'w')
-	f.write(HTML_code)
+	f.write(re.sub(eclipse_start+'.*?'+eclipse_end, '' ,HTML_code))
 	f.close()
+	if arguments.eclipse_output:
+	    f = open(arguments.eclipse_output, 'w')
+	    f.write(HTML_code)
+	    f.close()

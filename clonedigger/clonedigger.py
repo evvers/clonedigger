@@ -83,8 +83,8 @@ The semantics of threshold options is discussed in the paper "Duplicate code det
     cmdline.add_option('--ignore-dir', 
                        action='append', dest='ignore_dirs',
                        help='exclude directories from parsing')
-    cmdline.add_option('--links-for-eclipse', 
-                       action='store_true', dest='links_for_eclipse',
+    cmdline.add_option('--eclipse-output', 
+                       dest='eclipse_output',
                        help='for internal usage only')
     cmdline.add_option('--report-unifiers', 
                        action='store_true', dest='report_unifiers',

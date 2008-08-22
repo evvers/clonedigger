@@ -6,4 +6,3 @@ print_time = True
 force = False  
 use_diff = False 
 clusterize_using_hash = False
-links_for_eclipse = False
