@@ -1,7 +1,13 @@
 package org.clonedigger;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.MappedByteBuffer;
+import java.nio.channels.FileChannel;
 
 import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.filesystem.IFileStore;
@@ -10,13 +16,17 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.LocationEvent;
 import org.eclipse.swt.browser.LocationListener;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.dialogs.SaveAsDialog;
 import org.eclipse.ui.ide.FileStoreEditorInput;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.internal.browser.WebBrowserEditor;
@@ -35,9 +45,10 @@ public class ResultBrowser extends WebBrowserEditor {
 
 		public void changed(LocationEvent event) {}
 
-		public void changing(LocationEvent event) 
+		public void changing(LocationEvent event)
 		{
 			boolean WINDOWS = java.io.File.separatorChar == '\\';
+			
 			if(event.location.startsWith("clone:"))
 			{
 				event.doit = false;
@@ -91,7 +102,47 @@ public class ResultBrowser extends WebBrowserEditor {
 					Activator.log(e);
 				}
 			}
+			
+			if(event.location.startsWith("http:")) event.doit = false;
+			
+			if(event.location.startsWith(System.getProperty("java.io.tmpdir")))
+			{
+				event.doit = false;
+				Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
+				SaveAsDialog dialog = new SaveAsDialog(shell);
+				//FileDialog dialog = new FileDialog(shell, SWT.SAVE);
+				//String[] exts = {"*.html"};
+				//dialog.setFilterExtensions(exts);
+				//String dest = dialog.open();
+				//if(dest != null)
+				if(dialog.open() == SWT.OK)
+				{
+					String dest = dialog.getResult().toOSString();
+					try {
+						copy(new File(event.location), new File(dest));
+					} catch (IOException e) {
+						Activator.log(e);
+					}
+				}
+			}
 		}
+	}
+	
+	public static void copy(File source, File dest) throws IOException {
+	     FileChannel in = null, out = null;
+	     try {          
+	          in = new FileInputStream(source).getChannel();
+	          out = new FileOutputStream(dest).getChannel();
+	 
+	          long size = in.size();
+	          MappedByteBuffer buf = in.map(FileChannel.MapMode.READ_ONLY, 0, size);
+	 
+	          out.write(buf);
+	 
+	     } finally {
+	          if (in != null) in.close();
+	          if (out != null) out.close();
+	     }
 	}
 	
 	public ResultBrowser() {

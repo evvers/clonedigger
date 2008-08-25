@@ -490,19 +490,23 @@ public class DigAction implements
 		consolePage.console.setText("");
 		consolePage.setPageComplete(false);
 		
+		//Normal output file name
+		String ohtmFile = "";
+		
 		File flistFile = null;
 		try {
 			File tmpfile = File.createTempFile("cde_output", ".htm");
 			htmFile = tmpfile.getAbsolutePath();
 			tmpfile.deleteOnExit();
+			
+			tmpfile = File.createTempFile("cde_output_o", ".htm");
+			ohtmFile = tmpfile.getAbsolutePath();
+			tmpfile.deleteOnExit();
+			
 			flistFile = File.createTempFile("cde_flist", ".lst");
 			flistFile.deleteOnExit();
-		} catch (IOException e) {
-			Activator.log(e);
-		}
-		BufferedWriter flistStream;
-		try {
-			flistStream = new BufferedWriter(new FileWriter(flistFile));
+		
+			BufferedWriter flistStream = new BufferedWriter(new FileWriter(flistFile));
 			for(String f: selectedFiles)
 			{
 				f = f.replaceAll("\\\\", "/"); //fix bug in browsersupport, which broke links with "\"
@@ -561,14 +565,14 @@ public class DigAction implements
 		
 		pb.command().add("python");
 		pb.command().add(runpath);
-		pb.command().add("--links-for-eclipse");
 		if(langidx == 1) 
 			pb.command().add("--lang=java");
 		if(digWizard.resourcePage.fastMode.getSelection()) 
 			pb.command().add("--fast");
 		pb.command().add("--size-threshold=" + digWizard.resourcePage.cloneSize.getSelection());
 		pb.command().add("--distance-threshold=" + digWizard.resourcePage.cloneDist.getSelection()); 
-		pb.command().add("--output=" + htmFile);
+		pb.command().add("--output=" + ohtmFile);
+		pb.command().add("--eclipse-output=" + htmFile);
 		pb.command().add("--file-list=" + flistFile.getAbsolutePath());
 		pb.redirectErrorStream(true);
 		String ppath = (new File(runpath)).getParent() + "/CloneDigger";
@@ -634,6 +638,10 @@ public class DigAction implements
 							public void run() {
 								synchronized(Activator.getDefault())
 								{
+									//flistFile.delete(); we cant do this now through the stupid java 
+									//limitation with "final" variables, also we cant make it final cause 
+									//initialization of this variable may throw an error... 
+									
 									//Allow  to run other threads
 									if(digWizard != null)
 									{

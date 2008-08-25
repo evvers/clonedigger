@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Helloworld Plug-in
 Bundle-SymbolicName: org.clonedigger;singleton:=true
-Bundle-Version: 1.1.3
+Bundle-Version: 1.1.4
 Bundle-Activator: org.clonedigger.Activator
 Bundle-Vendor: Clone Digger
 Require-Bundle: org.eclipse.ui,
