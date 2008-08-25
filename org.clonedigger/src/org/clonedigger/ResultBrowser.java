@@ -4,8 +4,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 
@@ -13,9 +15,11 @@ import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.filesystem.IFileStore;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.LocationEvent;
 import org.eclipse.swt.browser.LocationListener;
@@ -105,23 +109,36 @@ public class ResultBrowser extends WebBrowserEditor {
 			
 			if(event.location.startsWith("http:")) event.doit = false;
 			
-			System.err.print(event.location);
-			
-			if(event.location.startsWith(System.getProperty("java.io.tmpdir")))
+			if(event.location.startsWith(System.getProperty("java.io.tmpdir")) || 
+					event.location.startsWith("file:"))
 			{
+				String src = event.location;
+				if(src.startsWith("file:")) 
+				{
+					src = src.replaceAll("^file:", "");
+					src = src.replaceAll("^/+", "");
+					if(!WINDOWS) src = "/" + src;
+				}
+				
 				event.doit = false;
 				Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
-				SaveAsDialog dialog = new SaveAsDialog(shell);
-				//FileDialog dialog = new FileDialog(shell, SWT.SAVE);
-				//String[] exts = {"*.html"};
-				//dialog.setFilterExtensions(exts);
-				//String dest = dialog.open();
-				//if(dest != null)
-				if(dialog.open() == SWT.OK)
+				//SaveAsDialog dialog = new SaveAsDialog(shell);
+				FileDialog dialog = new FileDialog(shell, SWT.SAVE);
+				String[] exts = {"*.html"};
+				dialog.setFilterExtensions(exts);
+				String dest = dialog.open();
+				if(dest != null)
+				//if(dialog.open() == Window.OK)
 				{
-					String dest = dialog.getResult().toOSString();
+					//String dest = dialog.getResult().toOSString();
+					
+					//ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(dest)).
+					
+					//dest = ResourcesPlugin.getPlugin().find(new Path(dest)).getPath();
+					//if(WINDOWS) dest = dest.replaceAll("^/+", "");
+					
 					try {
-						copy(new File(event.location), new File(dest));
+						copy(new File(src), new File(dest));
 					} catch (IOException e) {
 						Activator.log(e);
 					}
