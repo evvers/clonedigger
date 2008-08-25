@@ -105,6 +105,8 @@ public class ResultBrowser extends WebBrowserEditor {
 			
 			if(event.location.startsWith("http:")) event.doit = false;
 			
+			System.err.print(event.location);
+			
 			if(event.location.startsWith(System.getProperty("java.io.tmpdir")))
 			{
 				event.doit = false;
