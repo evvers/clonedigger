@@ -38,8 +38,9 @@ class PythonCompilerSourceFile (SourceFile):
     distance_threshold = 5
     size_threshold = 5
     ignored_statements = ['Import', 'From']
-    def __init__(self, file_name):
+    def __init__(self, file_name, func_prefixes = ()):
 	SourceFile.__init__(self, file_name)
+	self._func_prefixes = func_prefixes
 	def rec_build_tree(compiler_ast_node, is_statement=False):
 	    def flatten(list):
 		l = []
@@ -92,7 +93,12 @@ class PythonCompilerSourceFile (SourceFile):
 		    r.addChild(t)		    
 
 	    if isinstance(compiler_ast_node, compiler.ast.Node):		
-		name = compiler_ast_node.__class__.__name__		
+		name = compiler_ast_node.__class__.__name__
+		if name == 'Function':
+                   for prefix in self._func_prefixes:
+                       if compiler_ast_node.name.startswith(prefix):
+                           # skip function that matches pattern
+                           return AbstractSyntaxTree('none')
 		if name in ['Function', 'Class']:
 		    # ignoring class and function docs
 		    compiler_ast_node.doc = None

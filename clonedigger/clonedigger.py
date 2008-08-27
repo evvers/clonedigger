@@ -89,14 +89,23 @@ The semantics of threshold options is discussed in the paper "Duplicate code det
     cmdline.add_option('--report-unifiers', 
                        action='store_true', dest='report_unifiers',
                        help='')
+    cmdline.add_option('--func-prefixes',
+                      action='store',
+                       dest='f_prefixes',
+                      help='skip functions/methods with these prefixes (provide a CSV string as argument)')
     cmdline.add_option('--file-list', dest='file_list')
 
     cmdline.set_defaults(output='output.html',
                          language='python', 
                          ingore_dirs=[],
+                         f_prefixes = None,
                          **arguments.__dict__)
 
     (options, source_file_names) = cmdline.parse_args()
+    if options.f_prefixes != None:
+       func_prefixes = tuple([x.strip() for x in options.f_prefixes.split(',')])
+    else:
+       func_prefixes = ()
     source_files = [] 
     report = html_report.HTMLReport()    
 
@@ -121,11 +130,11 @@ The semantics of threshold options is discussed in the paper "Duplicate code det
     
     report.startTimer('Construction of AST')
 
-    def parse_file(file_name):
+    def parse_file(file_name, func_prefixes):
         try:
             print 'Parsing ', file_name, '...',
             sys.stdout.flush()
-            source_file = supplier(file_name)
+            source_file = supplier(file_name, func_prefixes)
             source_file.getTree().propagateCoveredLineNumbers()
             source_file.getTree().propagateHeight()
             source_files.append(source_file)
@@ -151,13 +160,13 @@ The semantics of threshold options is discussed in the paper "Duplicate code det
 		files = [os.path.join(file_name, f) for f in os.listdir(file_name) 
                         if os.path.splitext(f)[1][1:] == supplier.extension]
 		for f in files:
-		    parse_file(f)
+		    parse_file(f, func_prefixes)
 	    else:
 		for dirpath, dirnames, filenames in walk(file_name):
 		    for f in filenames:
-			parse_file(os.path.join(dirpath, f))
+			parse_file(os.path.join(dirpath, f), func_prefixes)
         else:
-            parse_file(file_name)
+            parse_file(file_name, func_prefixes)
         
     report.stopTimer()
     duplicates = clone_detection_algorithm.findDuplicateCode(source_files, report)
