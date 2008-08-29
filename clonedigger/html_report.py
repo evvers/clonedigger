@@ -74,124 +74,129 @@ class HTMLReport(Report):
 
 	clone_descriptions = []
 	for clone_i in range(len(self._clones)):
-	    clone = self._clones[clone_i]
-	    s = '<P>'
-	    s += '<B>Clone # %d</B><BR>'%(clone_i +1,)
+	    try:
+		clone = self._clones[clone_i]
+		s = '<P>'
+		s += '<B>Clone # %d</B><BR>'%(clone_i +1,)
 #	    s = '<P> Clone detected in source files "%s" and "%s" <BR>\n' % (sequences[0].getSourceFile().getFileName(), sequences[1].getSourceFile().getFileName())
-	    s+= 'Distance between two fragments = %d <BR>' %(clone.calcDistance())
-	    s+= 'Clone size = ' + str(max([len(set(clone[i].getCoveredLineNumbers())) for i in [0,1]] ))
-	    s+= '<TABLE NOWRAP WIDTH=100% BORDER=1>'
-	    s+= eclipse_start
-	    s+= '<TR>'
-	    for j in [0,1]:
-		s+= '<TD> <a href="clone://%s?%d&%d"> Go to this fragment in Eclipse </a> </TD>'%(clone[j].getSourceFile().getFileName(), min(clone[j][0].getCoveredLineNumbers()), max(clone[j][-1].getCoveredLineNumbers()))
-		if j==0:
-		    s += '<TD></TD>'
-	    s+= '</TR>'
-	    s+= eclipse_end
-	    for j in [0,1]:
-		s+= '<TD>'
-		s+= 'Source file "%s"<BR>' %(clone[j].getSourceFile().getFileName(),)
-		if clone[j][0].getCoveredLineNumbers() == []:
-		    # TODO remove after...
-		    pdb.set_trace()
-		s+= 'The first line is %d' %(min(clone[j][0].getCoveredLineNumbers())+1,)
-		s+= '</TD>'
-		if j == 0:
-		    s+= '<TD></TD>'
-	    s+= '</TR>'
-	    for i in range(clone[0].getLength()):
-		s += '<TR>\n'
-		t = []
-		statements = [clone[j][i] for j in [0,1]]
+		s+= 'Distance between two fragments = %d <BR>' %(clone.calcDistance())
+		s+= 'Clone size = ' + str(max([len(set(clone[i].getCoveredLineNumbers())) for i in [0,1]] ))
+		s+= '<TABLE NOWRAP WIDTH=100% BORDER=1>'
+		s+= eclipse_start
+		s+= '<TR>'
+		for j in [0,1]:
+		    s+= '<TD> <a href="clone://%s?%d&%d"> Go to this fragment in Eclipse </a> </TD>'%(clone[j].getSourceFile().getFileName(), min(clone[j][0].getCoveredLineNumbers()), max(clone[j][-1].getCoveredLineNumbers()))
+		    if j==0:
+			s += '<TD></TD>'
+		s+= '</TR>'
+		s+= eclipse_end
+		for j in [0,1]:
+		    s+= '<TD>'
+		    s+= 'Source file "%s"<BR>' %(clone[j].getSourceFile().getFileName(),)
+		    if clone[j][0].getCoveredLineNumbers() == []:
+			# TODO remove after...
+			pdb.set_trace()
+		    s+= 'The first line is %d' %(min(clone[j][0].getCoveredLineNumbers())+1,)
+		    s+= '</TD>'
+		    if j == 0:
+			s+= '<TD></TD>'
+		s+= '</TR>'
+		for i in range(clone[0].getLength()):
+		    s += '<TR>\n'
+		    t = []
+		    statements = [clone[j][i] for j in [0,1]]
 
-		def diff_highlight(seqs):
-		    s = difflib.SequenceMatcher(lambda x:x == '<BR>\n')
-		    s.set_seqs(seqs[0], seqs[1])
-		    blocks = s.get_matching_blocks()
-		    if not ((blocks[0][0]==0) and (blocks[0][1]==0)):
-			blocks = [(0,0,0)] + blocks
-		    r = ['', '']
-		    for i in range(len(blocks)):
-			block = blocks[i]
-			for j in [0,1]:
-			    r[j] += seqs[j][block[j]:block[j]+block[2]]
-			if (i < (len(blocks)-1)):				
-			    nextblock = blocks[i+1]
+		    def diff_highlight(seqs):
+			s = difflib.SequenceMatcher(lambda x:x == '<BR>\n')
+			s.set_seqs(seqs[0], seqs[1])
+			blocks = s.get_matching_blocks()
+			if not ((blocks[0][0]==0) and (blocks[0][1]==0)):
+			    blocks = [(0,0,0)] + blocks
+			r = ['', '']
+			for i in range(len(blocks)):
+			    block = blocks[i]
 			    for j in [0,1]:
-				r[j] += '<span'+very_strange_const+'style="color:rgb(255,0,0);">%s</span>'%(seqs[j][block[j]+block[2]:nextblock[j]],)
-		    return r
-		# preparation of indentation
-		indentations = (set(), set())
-		for j in (0,1):
-		    for source_line in statements[j].getSourceLines():
-			indentations[j].add(re.findall('^\s*', source_line)[0].replace('\t', 4*' '))
-		indentations = (list(indentations[0]), list(indentations[1]))
-		indentations[0].sort()
-		indentations[1].sort()
-		source_lines = ([], [])
-		def use_diff():
+				r[j] += seqs[j][block[j]:block[j]+block[2]]
+			    if (i < (len(blocks)-1)):				
+				nextblock = blocks[i+1]
+				for j in [0,1]:
+				    r[j] += '<span'+very_strange_const+'style="color:rgb(255,0,0);">%s</span>'%(seqs[j][block[j]+block[2]:nextblock[j]],)
+			return r
+		    # preparation of indentation
+		    indentations = (set(), set())
 		    for j in (0,1):
 			for source_line in statements[j].getSourceLines():
-			    indent1 = re.findall('^\s*', source_line)[0]
-			    indent2 = indent1.replace('\t', 4*' ')
-			    source_line = re.sub('^' + indent1,  indentations[j].index(indent2)*' ', source_line)
-			    source_lines[j].append(source_line)
-		    d = diff_highlight([('\n'.join(source_lines[j])) for j in [0,1]])
-		    d = [format_line_code(d[i].replace('\n', '<BR>\n')) for i in [0,1]]		   
-		    d = [d[i].replace(very_strange_const, ' ') for i in (0,1)]
-		    u = anti_unification.Unifier(statements[0], statements[1])
-		    return d,u
-		if arguments.use_diff:
-		    (d,u) = use_diff()
-		else:
-		    try:
-			def rec_correct_as_string(t1, t2, s1, s2):
-			    def highlight(s):
-				return '<span style="color: rgb(255, 0, 0);">' + s + '</span>'
-			    class NewAsString:
-				def __init__(self, s):
-				    self.s = highlight(s)
-				def __call__(self):
-				    return self.s
-			    def set_as_string_node_parent(t):
-				if not isinstance(t, AbstractSyntaxTree):
-				    t = t.getParent()
-				n = NewAsString(t.ast_node.as_string())
-				t.ast_node.as_string = n
-
-			    if (t1 in s1) or (t2 in s2):
-				for t in (t1, t2):
-				    set_as_string_node_parent(t)
-				return
-			    assert(len(t1.getChilds()) == len(t2.getChilds()))
-			    for i in range(len(t1.getChilds())):
-				c1 = t1.getChilds()[i]
-				c2 = t2.getChilds()[i]
-				rec_correct_as_string(c1, c2, s1, s2)
-
-			(s1, s2) = (statements[0], statements[1])
-			u = anti_unification.Unifier(s1, s2)
-			rec_correct_as_string(s1, s2, u.getSubstitutions()[0].getMap().values(), u.getSubstitutions()[1].getMap().values() )
-			d = [None, None]
+			    indentations[j].add(re.findall('^\s*', source_line)[0].replace('\t', 4*' '))
+		    indentations = (list(indentations[0]), list(indentations[1]))
+		    indentations[0].sort()
+		    indentations[1].sort()
+		    source_lines = ([], [])
+		    def use_diff():
 			for j in (0,1):
-			    d[j] = statements[j].ast_node.as_string().replace('\n', '<BR>\n')
-
-		    except:
-			print 'The following error occured during highlighting of differences on the AST level:'
-			traceback.print_exc()			
-			print 'using diff highlight'
+			    for source_line in statements[j].getSourceLines():
+				indent1 = re.findall('^\s*', source_line)[0]
+				indent2 = indent1.replace('\t', 4*' ')
+				source_line = re.sub('^' + indent1,  indentations[j].index(indent2)*' ', source_line)
+				source_lines[j].append(source_line)
+			d = diff_highlight([('\n'.join(source_lines[j])) for j in [0,1]])
+			d = [format_line_code(d[i].replace('\n', '<BR>\n')) for i in [0,1]]		   
+			d = [d[i].replace(very_strange_const, ' ') for i in (0,1)]
+			u = anti_unification.Unifier(statements[0], statements[1])
+			return d,u
+		    if arguments.use_diff:
 			(d,u) = use_diff()
-		for j in [0,1]:		    
-		    t.append('<TD>\n' + d[j] + '</TD>\n')
-		if u.getSize() > 0:
-		    color = 'RED'
-		else:
-		    color = 'AQUA'
-		s+= t[0] + '<TD style="width: 10px;" BGCOLOR=%s> </TD>'%(color,) + t[1]
-		s += '</TR>\n'
-	    s+= '</TABLE> </P> <HR>'
-	    clone_descriptions.append(s)
+		    else:
+			try:
+			    def rec_correct_as_string(t1, t2, s1, s2):
+				def highlight(s):
+				    return '<span style="color: rgb(255, 0, 0);">' + s + '</span>'
+				class NewAsString:
+				    def __init__(self, s):
+					self.s = highlight(s)
+				    def __call__(self):
+					return self.s
+				def set_as_string_node_parent(t):
+				    if not isinstance(t, AbstractSyntaxTree):
+					t = t.getParent()
+				    n = NewAsString(t.ast_node.as_string())
+				    t.ast_node.as_string = n
+
+				if (t1 in s1) or (t2 in s2):
+				    for t in (t1, t2):
+					set_as_string_node_parent(t)
+				    return
+				assert(len(t1.getChilds()) == len(t2.getChilds()))
+				for i in range(len(t1.getChilds())):
+				    c1 = t1.getChilds()[i]
+				    c2 = t2.getChilds()[i]
+				    rec_correct_as_string(c1, c2, s1, s2)
+
+			    (s1, s2) = (statements[0], statements[1])
+			    u = anti_unification.Unifier(s1, s2)
+			    rec_correct_as_string(s1, s2, u.getSubstitutions()[0].getMap().values(), u.getSubstitutions()[1].getMap().values() )
+			    d = [None, None]
+			    for j in (0,1):
+				d[j] = statements[j].ast_node.as_string().replace('\n', '<BR>\n')
+
+			except:
+			    print 'The following error occured during highlighting of differences on the AST level:'
+			    traceback.print_exc()			
+			    print 'using diff highlight'
+			    (d,u) = use_diff()
+		    for j in [0,1]:		    
+			t.append('<TD>\n' + d[j] + '</TD>\n')
+		    if u.getSize() > 0:
+			color = 'RED'
+		    else:
+			color = 'AQUA'
+		    s+= t[0] + '<TD style="width: 10px;" BGCOLOR=%s> </TD>'%(color,) + t[1]
+		    s += '</TR>\n'
+		s+= '</TABLE> </P> <HR>'
+		clone_descriptions.append(s)
+	    except:
+		print "Clone info can't be written to the report. "
+		traceback.print_exc()			
+	
 	descr = """<P>Source files: %d</P>
 	<a href = "javascript:unhide('files');">Click here to show/hide file names</a><div id="files" class="hidden"><P><B>Source files:</B><BR>%s</P></div>
 	<P>Clones detected: %d</P>
