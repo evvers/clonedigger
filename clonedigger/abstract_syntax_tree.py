@@ -98,7 +98,7 @@ class AbstractSyntaxTree:
 	return r
     def getSourceLines(self):
 	source_line_numbers = set([])
-	r = []
+	r = []	
 	source_line_numbers = self.getCoveredLineNumbers()
 	source_line_numbers_list = list(range(min(source_line_numbers), max(source_line_numbers)+1))
 	source_line_numbers_list.sort()

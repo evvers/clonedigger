@@ -25,3 +25,6 @@ abstract_syntax_tree_suppliers['python'] = python_compiler.PythonCompilerSourceF
 
 import java_antlr
 abstract_syntax_tree_suppliers['java'] = java_antlr.JavaANTLRSourceFile
+
+import lua_antlr
+abstract_syntax_tree_suppliers['lua'] = lua_antlr.LuaANTLRSourceFile
