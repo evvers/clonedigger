@@ -51,7 +51,7 @@ def findDuplicateCode(source_files, report):
 		    print
 		    print '-----------------------------------------'
 		    print 'Warning: sequences of statements, consists of %d elements is too long.' %(len(sequence),)
-		    print 'It starts at %s:%d.'%(first_statement.getSourceFile().getFileName(), min(first_statement.getLineNumbers()))
+		    print 'It starts at %s:%d.'%(first_statement.getSourceFile().getFileName(), min(first_statement.getCoveredLineNumbers()))
 		    print 'It will be ignored. Use --force to override this restriction.'
 		    print 'Please refer to http://clonedigger.sourceforge.net/documentation.html'
 		    print '-----------------------------------------'
@@ -148,7 +148,7 @@ def findDuplicateCode(source_files, report):
 		    if length>10:
 			print
 			print '-----------------------------------------'
-			print 'Warning: sequence of statements starting at %s:%d'%(first_statement.getSourceFile().getFileName(), min(first_statement.getLineNumbers()))
+			print 'Warning: sequence of statements starting at %s:%d'%(first_statement.getSourceFile().getFileName(), min(first_statement.getCoveredLineNumbers()))
 			print 'consists of many similar statements.'
 			print 'It will be ignored. Use --force to override this restriction.'
 			print 'Please refer to http://clonedigger.sourceforge.net/documentation.html'
