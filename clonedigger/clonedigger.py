@@ -60,7 +60,7 @@ The semantics of threshold options is discussed in the paper "Duplicate code det
                        type='int', dest='distance_threshold',
                        help='the maximum amount of differences between pair of sequences in clone pair (5 by default). Larger value leads to larger amount of false positives')
     cmdline.add_option('--hashing-depth', 
-                       dest='hashing_depth',
+                       type='int', dest='hashing_depth',
                        help='default value if 1, read the paper for semantics. Computation can be speeded up by increasing this value (but some clones can be missed)')
     cmdline.add_option('--size-threshold', 
                        type='int', dest='size_threshold',
