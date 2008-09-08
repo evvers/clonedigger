@@ -94,7 +94,7 @@ The semantics of threshold options is discussed in the paper "Duplicate code det
                        dest='f_prefixes',
                       help='skip functions/methods with these prefixes (provide a CSV string as argument)')
     cmdline.add_option('--file-list', dest='file_list',
-		      help='name of the file, which stores the list of source files which will be searched for clones')
+		      help='a file that contains a list of file names that must be processed by Clone Digger')
 
     cmdline.set_defaults(output='output.html',
                          language='python', 
