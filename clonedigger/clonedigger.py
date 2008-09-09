@@ -76,7 +76,7 @@ The semantics of threshold options is discussed in the paper "Duplicate code det
                        help='')
     cmdline.add_option('--force-diff', 
                        action='store_true', dest='use_diff',
-                       help='')
+                       help='force highlighting of differences based on the diff algorithm')
     cmdline.add_option('--fast', 
                        action='store_true', dest='clusterize_using_hash',
                        help='find only clones, which differ in variable and function names and constants')
