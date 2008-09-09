@@ -1,5 +1,5 @@
 #    Copyright 2008 Peter Bulychev
-#	 http://clonedigger.sourceforge.net
+#        http://clonedigger.sourceforge.net
 #
 #    This file is part of Clone Digger.
 #

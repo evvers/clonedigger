@@ -94,7 +94,7 @@ The semantics of threshold options is discussed in the paper "Duplicate code det
                        dest='f_prefixes',
                       help='skip functions/methods with these prefixes (provide a CSV string as argument)')
     cmdline.add_option('--file-list', dest='file_list',
-		      help='a file that contains a list of file names that must be processed by Clone Digger')
+                      help='a file that contains a list of file names that must be processed by Clone Digger')
 
     cmdline.set_defaults(output='output.html',
                          language='python', 
@@ -135,11 +135,11 @@ The semantics of threshold options is discussed in the paper "Duplicate code det
         try:
             print 'Parsing ', file_name, '...',
             sys.stdout.flush()
-	    if options.language=='python':
-		source_file = supplier(file_name, func_prefixes)
-	    else:
-		# TODO implement func_prefixes for java also
-		source_file = supplier(file_name)
+            if options.language=='python':
+                source_file = supplier(file_name, func_prefixes)
+            else:
+                # TODO implement func_prefixes for java also
+                source_file = supplier(file_name)
             source_file.getTree().propagateCoveredLineNumbers()
             source_file.getTree().propagateHeight()
             source_files.append(source_file)
@@ -160,16 +160,16 @@ The semantics of threshold options is discussed in the paper "Duplicate code det
 
     for file_name in source_file_names:
         if os.path.isdir(file_name):
-	    if arguments.no_recursion:
-		dirpath = file_name
-		files = [os.path.join(file_name, f) for f in os.listdir(file_name) 
+            if arguments.no_recursion:
+                dirpath = file_name
+                files = [os.path.join(file_name, f) for f in os.listdir(file_name) 
                         if os.path.splitext(f)[1][1:] == supplier.extension]
-		for f in files:
-		    parse_file(f, func_prefixes)
-	    else:
-		for dirpath, dirnames, filenames in walk(file_name):
-		    for f in filenames:
-			parse_file(os.path.join(dirpath, f), func_prefixes)
+                for f in files:
+                    parse_file(f, func_prefixes)
+            else:
+                for dirpath, dirnames, filenames in walk(file_name):
+                    for f in filenames:
+                        parse_file(os.path.join(dirpath, f), func_prefixes)
         else:
             parse_file(file_name, func_prefixes)
         
@@ -179,12 +179,12 @@ The semantics of threshold options is discussed in the paper "Duplicate code det
         report.addClone(duplicate)
     report.sortByCloneSize()
     try:
-	report.writeReport(output_file_name)
+        report.writeReport(output_file_name)
     except:
-	print "catched error, removing output file"
-	if os.path.exists(output_file_name):
-	    os.remove(output_file_name)
-	raise 
+        print "catched error, removing output file"
+        if os.path.exists(output_file_name):
+            os.remove(output_file_name)
+        raise 
 
 if __name__ == '__main__':
     main()
