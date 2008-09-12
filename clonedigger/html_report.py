@@ -176,7 +176,25 @@ class HTMLReport(Report):
                             rec_correct_as_string(s1, s2, u.getSubstitutions()[0].getMap().values(), u.getSubstitutions()[1].getMap().values() )
                             d = [None, None]
                             for j in (0,1):
-                                d[j] = statements[j].ast_node.as_string().replace('\n', '<BR>\n')
+                                d[j] = statements[j].ast_node.as_string()
+
+                                lines = d[j].split('\n')
+                                for ii in range(len(lines)):
+                                    temp_line = ''
+                                    jj = 0
+                                    try:
+                                        while lines[ii][jj] == ' ':
+                                            temp_line += '&nbsp;'
+                                            jj += 1
+                                    except IndexError:
+                                        # suppress errors if line has no leading spaces
+                                        pass
+                                    temp_line += lines[ii][jj:]
+                                    lines[ii] = temp_line
+                                d[j] = '\n'.join(lines)
+
+                                d[j] = d[j].replace('\n', '<BR>\n')
+
 
                         except:
                             print 'The following error occured during highlighting of differences on the AST level:'
