@@ -162,7 +162,9 @@ class PythonCompilerSourceFile (SourceFile):
                     add_childs([compiler_ast_node.expr])
                 elif name == "Lambda": 
 #                   TODO: uncomment and fix
-                    add_leaf_childs(compiler_ast_node.argnames, "argnames")
+                    add_leaf_childs(compiler_ast_node.argnames, "argnames")                    
+                    if compiler_ast_node.defaults == ():
+                        compiler_ast_node.defaults = []
                     add_childs(compiler_ast_node.defaults)              
                     add_childs([compiler_ast_node.code])
                 elif name == "Name":
