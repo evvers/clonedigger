@@ -31,7 +31,7 @@ def findDuplicateCode(source_files, report):
         statement_count += sum([len(s) for s in sequences])
 
     if not sequences_lengths:
-        print 'Input is empty'
+        print 'Input is empty or the size of the input is below the size threshold'
         sys.exit(0)
 
     if verbose:
