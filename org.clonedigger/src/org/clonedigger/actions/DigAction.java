@@ -344,17 +344,27 @@ public class DigAction implements
 					IEditorInput htmInput = null;
 					htmInput = new WebBrowserEditorInput(
 							new URL("file:/" + htmFile.replaceAll("^/+", "")), 0);
-
+					
+					if(htmInput == null)
+						Activator.log(new Exception(
+							"Cant create WebBrowserEditorInput for file \"" + 
+							(new java.io.File(htmFile)).getAbsolutePath() + 
+							"\""));
+ 
 					//IEditorPart	htmEditor = (IEditorPart)
 					page.openEditor(htmInput,
 						"org.clonedigger.resultbrowser");
-						//"org.eclipse.ui.browser.editor");		
+					//"org.eclipse.ui.browser.editor");		
 
 				} catch (MalformedURLException e) {
 					Activator.log(e);
 				} catch (PartInitException e) {
 					Activator.log(e);
 				}
+			else
+				Activator.log(new Exception("File not exists \"" + 
+					(new java.io.File(htmFile)).getAbsolutePath() + "\""));
+					
 			return true;
 		}
 		
