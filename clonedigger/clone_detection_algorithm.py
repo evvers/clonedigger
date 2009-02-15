@@ -134,29 +134,44 @@ def findDuplicateCode(source_files, report):
         sequences_without_restriction = statement_sequences
         statement_sequences = []
         for sequence in sequences_without_restriction:
+            new_sequence = copy.copy(sequence._sequence) 
             current_mark = None
             length = 0
-            first_statement = None
-            flag = True 
-            for statement in sequence:
+            first_statement_index = None
+            flag = False 
+            for i in range(len(sequence)):
+                statement = sequence[i]
                 if statement.getMark() != current_mark:
+                    if flag == True:
+                        flag = False 
                     current_mark=statement.getMark()
                     length=0
-                    first_statement = statement
+                    first_statement_index = i
                 else:
                     length += 1
                     if length>10:
-                        print
-                        print '-----------------------------------------'
-                        print 'Warning: sequence of statements starting at %s:%d'%(first_statement.getSourceFile().getFileName(), min(first_statement.getCoveredLineNumbers()))
-                        print 'consists of many similar statements.'
-                        print 'It will be ignored. Use --force to override this restriction.'
-                        print 'Please refer to http://clonedigger.sourceforge.net/documentation.html'
-                        print '-----------------------------------------'
-                        flag = False 
-                        break
-            if flag:
-                statement_sequences.append(sequence)
+                        new_sequence[i] = None
+                        if not flag:
+                            for i in range(first_statement_index, i):
+                                new_sequence[i] = None
+                            first_statement = sequence[first_statement_index]                        
+                            print
+                            print '-----------------------------------------'
+                            print 'Warning: sequence of statements starting at %s:%d'%(first_statement.getSourceFile().getFileName(), min(first_statement.getCoveredLineNumbers()))
+                            print 'consists of many similar statements.'
+                            print 'It will be ignored. Use --force to override this restriction.'
+                            print 'Please refer to http://clonedigger.sourceforge.net/documentation.html'
+                            print '-----------------------------------------'
+                            flag = True 
+            new_sequence = new_sequence + [None]
+            cur_sequence = StatementSequence() 
+            for statement in new_sequence:
+                if statement == None:
+                    if cur_sequence:
+                        statement_sequences.append(cur_sequence)
+                        cur_sequence = StatementSequence() 
+                else:
+                    cur_sequence.addStatement(statement)
         return statement_sequences
 
     def mark_using_hash(hash_to_statement):     
