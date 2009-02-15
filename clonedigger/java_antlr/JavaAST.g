@@ -312,6 +312,7 @@ classDeclaration[Tree modifiers]
     ;
     
 normalClassDeclaration[Tree modifiers]
+@after {retval.tree.is_statement = true;}
     :   'class' identifier (typeParameters)?
         (extendsPhrase)?
         (implementsPhrase)?
@@ -473,6 +474,7 @@ interfaceMethodOrFieldRest[Tree modifiers, Tree type, Tree identifier]
 /* This converts obsolete post-formal '[]' array specifiers to array specifiers on the
    return type in the AST. */    
 methodDeclaratorRest[Tree modifiers, Tree type, Tree typeParameters, Tree identifier]
+@after {retval.tree.is_statement = true;}
     :   formalParameters 
         ( '[' ']'
           { type = (Tree)adaptor.becomeRoot(adaptor.create(ARRAY_OF, "ARRAY_OF"), type); }
@@ -492,6 +494,7 @@ throwsPhrase
     ;
     
 voidMethodDeclaratorRest[Tree modifiers, Tree identifier]
+@after {retval.tree.is_statement = true;}
     :   formalParameters (throwsPhrase)?
         (  methodBody
             -> ^(METHOD_DECLARATION {modifiers} VOID {identifier} formalParameters 
@@ -503,6 +506,7 @@ voidMethodDeclaratorRest[Tree modifiers, Tree identifier]
     ;
     
 interfaceMethodDeclaratorRest[Tree modifiers, Tree typeParameters, Tree type, Tree identifier]
+@after {retval.tree.is_statement = true;}
     :   formalParameters 
         ('[' ']'
             { type = (Tree)adaptor.becomeRoot(adaptor.create(ARRAY_OF, "ARRAY_OF"), type); })*
@@ -516,6 +520,7 @@ interfaceGenericMethodDecl[Tree modifiers]
     ;
     
 voidInterfaceMethodDeclaratorRest[Tree modifiers, Tree identifier]
+@after {retval.tree.is_statement = true;}
     :   formalParameters (throwsPhrase)? ';'
         -> ^(ABSTRACT_METHOD_DECLARATION {modifiers} VOID {identifier} formalParameters (throwsPhrase)?)
     ;
