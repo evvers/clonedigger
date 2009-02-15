@@ -69,7 +69,7 @@ def findDuplicateCode(source_files, report):
             for statement in statement_sequence:
                 if dcup_hash:
                     # 3 - CONSTANT HERE!
-                    h = statement.getDCupHash(max([statement.getHeight()/3, arguments.hashing_depth]))
+                    h = statement.getDCupHash(arguments.hashing_depth)
                 else:
                     h = statement.getFullHash()
                 if not hash_to_statement.has_key(h):
