@@ -288,4 +288,4 @@ class PairSequences:
     def getLength(self):
         return self[0].getLength()
     def getMaxCoveredLineNumbersCount(self):
-        return max([s.getCoveredLineNumbersCount() for s in self])
+        return min([s.getCoveredLineNumbersCount() for s in self])
