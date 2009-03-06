@@ -46,7 +46,7 @@ Notice:
 The semantics of threshold options is discussed in the paper "Duplicate code detection using anti-unification", which can be downloaded from the site http://clonedigger.sourceforge.net . All arguments are optional. Supported options are: 
 """)
     cmdline.add_option('-l', '--language', dest='language',
-                       type='choice', choices=['python', 'java', 'lua'],
+                       type='choice', choices=['python', 'java', 'lua', 'javascript', 'js'],
                        help='the programming language')
     cmdline.add_option('--no-recursion', dest='no_recursion',
                        action='store_true', 
