@@ -171,3 +171,5 @@ public class ResultBrowser extends WebBrowserEditor {
 	}
 
 }
+
+

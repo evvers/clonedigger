@@ -192,9 +192,9 @@ public class DigAction implements
 	                        				((IFile)member).getFileExtension().equals("py") ||
 	                        		   langCombo.getSelectionIndex() == 1 &&
 	                        				((IFile)member).getFileExtension().equals("java") ||
-						   langCombo.getSelectionIndex() == 2 &&
+	                        		   langCombo.getSelectionIndex() == 2 &&
 	                        				((IFile)member).getFileExtension().equals("js") ||
-						   langCombo.getSelectionIndex() == 3 &&
+	                        		   langCombo.getSelectionIndex() == 3 &&
 	                        				((IFile)member).getFileExtension().equals("lua"))
 
 
@@ -299,11 +299,11 @@ public class DigAction implements
                 		if(langCombo.getSelectionIndex() == 0 &&
                 				((IFile)member).getFileExtension().equals("py") ||
                 		   langCombo.getSelectionIndex() == 1 &&
-                				((IFile)member).getFileExtension().equals("java")
-				   langCombo.getSelectionIndex() == 2 &&
-	                        		((IFile)member).getFileExtension().equals("js") ||
-				   langCombo.getSelectionIndex() == 3 &&
-	                        		((IFile)member).getFileExtension().equals("lua"))
+                		   		((IFile)member).getFileExtension().equals("java") ||
+                		   langCombo.getSelectionIndex() == 2 &&
+	                        	((IFile)member).getFileExtension().equals("js") ||
+	                       langCombo.getSelectionIndex() == 3 &&
+	                        	((IFile)member).getFileExtension().equals("lua"))
                 			results.add(member);
                 } else results.add(member);
             }
