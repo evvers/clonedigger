@@ -126,6 +126,8 @@ public class DigAction implements
 			langCombo = new Combo(composite, SWT.BORDER | SWT.READ_ONLY);
 			langCombo.add("Python");
 			langCombo.add("Java");
+			langCombo.add("JavaScript");
+			langCombo.add("Lua");
 			langCombo.select(0);
 			gd = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
 			langCombo.setLayoutData(gd);
@@ -146,11 +148,16 @@ public class DigAction implements
 					if(langCombo.getSelectionIndex() == 0) {
 						cloneSize.setSelection(5);
 						cloneDist.setSelection(5);
-					} else {
+					} else if (langCombo.getSelectionIndex() == 1) {
 						cloneSize.setSelection(10);
 						cloneDist.setSelection(7);
+					} else if (langCombo.getSelectionIndex() == 2) {
+						cloneSize.setSelection(5);
+						cloneDist.setSelection(5);
+					} else if (langCombo.getSelectionIndex() == 3) {
+						cloneSize.setSelection(5);
+						cloneDist.setSelection(5);
 					}
-						
 				}
 				
 			});
@@ -184,7 +191,13 @@ public class DigAction implements
 	                        		if(langCombo.getSelectionIndex() == 0 &&
 	                        				((IFile)member).getFileExtension().equals("py") ||
 	                        		   langCombo.getSelectionIndex() == 1 &&
-	                        				((IFile)member).getFileExtension().equals("java"))
+	                        				((IFile)member).getFileExtension().equals("java") ||
+						   langCombo.getSelectionIndex() == 2 &&
+	                        				((IFile)member).getFileExtension().equals("js") ||
+						   langCombo.getSelectionIndex() == 3 &&
+	                        				((IFile)member).getFileExtension().equals("lua"))
+
+
 	                        			results.add(member);
 	                        } else results.add(member);
 	                    }
@@ -286,7 +299,11 @@ public class DigAction implements
                 		if(langCombo.getSelectionIndex() == 0 &&
                 				((IFile)member).getFileExtension().equals("py") ||
                 		   langCombo.getSelectionIndex() == 1 &&
-                				((IFile)member).getFileExtension().equals("java"))
+                				((IFile)member).getFileExtension().equals("java")
+				   langCombo.getSelectionIndex() == 2 &&
+	                        		((IFile)member).getFileExtension().equals("js") ||
+				   langCombo.getSelectionIndex() == 3 &&
+	                        		((IFile)member).getFileExtension().equals("lua"))
                 			results.add(member);
                 } else results.add(member);
             }
@@ -522,6 +539,8 @@ public class DigAction implements
 				f = f.replaceAll("\\\\", "/"); //fix bug in browsersupport, which broke links with "\"
 				if(langidx == 0 && f.endsWith(".py")) flistStream.write(f + "\n");
 				if(langidx == 1 && f.endsWith(".java")) flistStream.write(f + "\n");
+				if(langidx == 2 && f.endsWith(".js")) flistStream.write(f + "\n");
+				if(langidx == 2 && f.endsWith(".lua")) flistStream.write(f + "\n");
 			}
 			flistStream.flush();
 		} catch (IOException e) {
@@ -577,6 +596,10 @@ public class DigAction implements
 		pb.command().add(runpath);
 		if(langidx == 1) 
 			pb.command().add("--lang=java");
+		else if (langidx == 2)
+			pb.command().add("--lang=js");
+		else if (langidx == 3)
+			pb.command().add("--lang=lua");
 		if(digWizard.resourcePage.fastMode.getSelection()) 
 			pb.command().add("--fast");
 		pb.command().add("--size-threshold=" + digWizard.resourcePage.cloneSize.getSelection());
