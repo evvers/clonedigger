@@ -49,7 +49,17 @@ class LuaANTLRSourceFile (SourceFile):
                 self.stack.pop()
 
         tree_file_name  = 'temporary_ast.xml'
-        if os.system('java -classpath ./lua_antlr/TreeProducer.jar:./antlr_runtime/antlr-runtime-3.1.jar TreeProducer %s %s 2>err.log'%(file_name, tree_file_name)):
+        producer_class_path = os.path.join('.','lua_antlr', 'TreeProducer.jar')
+        antlr_class_path = os.path.join('.','antlr_runtime','antlr-runtime-3.1.jar')
+        if os.name in ['mac', 'posix']:
+            class_path_delimeter = ':'
+        elif os.name in ['nt', 'dos', 'ce']:
+            class_path_delimeter = ';'
+        else:
+            print 'unsupported OS'
+            assert(0)
+
+        if os.system('java -classpath ' + producer_class_path + class_path_delimeter + antlr_class_path + ' TreeProducer %s %s 2>err.log'%(file_name, tree_file_name)):
             f = open('err.log')
             s = f.read()
             f.close()
