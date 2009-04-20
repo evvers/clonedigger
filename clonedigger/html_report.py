@@ -22,6 +22,7 @@ import pdb
 import re
 import copy
 import traceback
+from cgi import escape
 
 import arguments
 import anti_unification
@@ -116,11 +117,12 @@ class HTMLReport(Report):
                         for i in range(len(blocks)):
                             block = blocks[i]
                             for j in [0,1]:
-                                r[j] += seqs[j][block[j]:block[j]+block[2]]
+                                r[j] += escape(seqs[j][block[j]:block[j]+block[2]])
                             if (i < (len(blocks)-1)):                           
                                 nextblock = blocks[i+1]
                                 for j in [0,1]:
-                                    r[j] += '<span'+very_strange_const+'style="color:rgb(255,0,0);">%s</span>'%(seqs[j][block[j]+block[2]:nextblock[j]],)
+                                    r[j] += '<span'+very_strange_const+'style="color:rgb(255,0,0);">%s</span>'%\
+                                                (escape(seqs[j][block[j]+block[2]:nextblock[j]]),)
                         return r
                     # preparation of indentation
                     indentations = (set(), set())
