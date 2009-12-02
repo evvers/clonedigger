@@ -86,6 +86,9 @@ The semantics of threshold options is discussed in the paper "Duplicate code det
     cmdline.add_option('--eclipse-output', 
                        dest='eclipse_output',
                        help='for internal usage only')
+    cmdline.add_option('--cpd-output', 
+                       action='store_true', dest='cpd_output',
+                       help='output as PMD''s CPD''s XML format. If output file not defined, output.xml is generated')
     cmdline.add_option('--report-unifiers', 
                        action='store_true', dest='report_unifiers',
                        help='')
@@ -96,8 +99,7 @@ The semantics of threshold options is discussed in the paper "Duplicate code det
     cmdline.add_option('--file-list', dest='file_list',
                       help='a file that contains a list of file names that must be processed by Clone Digger')
 
-    cmdline.set_defaults(output='output.html',
-                         language='python', 
+    cmdline.set_defaults(language='python', 
                          ingore_dirs=[],
                          f_prefixes = None,
                          **arguments.__dict__)
@@ -108,11 +110,20 @@ The semantics of threshold options is discussed in the paper "Duplicate code det
     else:
        func_prefixes = ()
     source_files = [] 
-    report = html_report.HTMLReport()    
 
     supplier = ast_suppliers.abstract_syntax_tree_suppliers[options.language]
     if options.language != 'python':
         options.use_diff = True
+
+    if options.cpd_output:
+        if options.output is None:
+	    options.output = 'output.xml'
+	report = html_report.CPDXMLReport()
+    else:
+    	report = html_report.HTMLReport()    
+
+    if options.output is None:
+    	options.output = 'output.html'
 
     output_file_name = options.output
 
