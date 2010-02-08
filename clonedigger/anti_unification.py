@@ -17,7 +17,6 @@
 
 import copy
 import sys
-import pdb
 
 from abstract_syntax_tree import *
 import suffix_tree

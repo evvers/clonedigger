@@ -29,7 +29,6 @@ from __future__ import generators
 __doctype__ = "restructuredtext en"
 
 import sys
-import pdb
 
 from clonedigger.logilab.common.compat import chain, set
 

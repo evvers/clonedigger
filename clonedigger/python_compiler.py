@@ -17,7 +17,6 @@
 #   along with Clone Digger.  If not, see <http://www.gnu.org/licenses/>.
 
 import compiler
-import pdb
 import types
 import logilab.astng.nodes
 
