@@ -201,7 +201,8 @@ class AbstractSyntaxTree:
                     else:
                         r+= 1
             return r
-        self._size = rec_calc_size(self)
+        if not hasattr(self, '_size'):
+            self._size = rec_calc_size(self)
     def getSize(self, ignore_none = True):
         ret = self._size
         if ignore_none:
