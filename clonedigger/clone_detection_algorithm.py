@@ -102,7 +102,7 @@ def findDuplicateCode(source_files, report):
                 if mincost < 0:
                     pdb.set_trace()
                 assert(mincost >= 0)
-                if bestcluster == None or mincost > arguments.clustering_threshold:
+                if bestcluster is None or mincost > arguments.clustering_threshold:
                     newcluster = Cluster(statement)
                     local_clusters.append(newcluster)
                 else:
@@ -170,7 +170,7 @@ def findDuplicateCode(source_files, report):
             new_sequence = new_sequence + [None]
             cur_sequence = StatementSequence()
             for statement in new_sequence:
-                if statement == None:
+                if statement is None:
                     if cur_sequence:
                         statement_sequences.append(cur_sequence)
                         cur_sequence = StatementSequence()
@@ -215,7 +215,7 @@ def findDuplicateCode(source_files, report):
                         lr.append((new_pair_sequences, first))
                 return lr
             n = pair_sequences.getLength() + 1
-            while 1:
+            while True:
                 n -= 1
                 if n == 0:
                     break
