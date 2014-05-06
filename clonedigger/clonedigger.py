@@ -185,7 +185,7 @@ The semantics of threshold options is discussed in the paper "Duplicate code det
             parse_file(file_name, func_prefixes)
         
     report.stopTimer()
-    duplicates = clone_detection_algorithm.findDuplicateCode(source_files, report)
+    duplicates = clone_detection_algorithm.find_duplicate_code(source_files, report)
     for duplicate in duplicates:
         report.addClone(duplicate)
     report.sortByCloneSize()

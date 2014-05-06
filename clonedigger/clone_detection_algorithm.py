@@ -21,7 +21,7 @@ from anti_unification import *
 from abstract_syntax_tree import *
 
 
-def findDuplicateCode(source_files, report):
+def find_duplicate_code(source_files, report):
     statement_sequences = []
     statement_count = 0
     sequences_lengths = []
